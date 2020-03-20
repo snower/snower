@@ -1,8 +1,10 @@
 ---
 title: 高性能千万级定时任务管理服务forsun laravel插件使用详解
+date: 2018-03-10 16:58:48
+tags: forsun
 ---
 
-Forsun高性能高精度定时服务，轻松管理千万级定时任务。
+forsun高性能高精度定时服务，轻松管理千万级定时任务。
 
 定时服务项目地址：https://github.com/snower/forsun
 
@@ -27,7 +29,7 @@ laravel插件项目地址： https://github.com/snower/forsun-laravel
 * 安装启动forsun服务，详情请看 [https://blog.snower.me/2018/03/05/forsun-introduction/](https://blog.snower.me/2018/03/05/forsun-introduction/)。
 * composer安装forsun-laravel。
 
-```
+```bash
 composer require "snower/forsun-laravel"
 ```
 
@@ -35,7 +37,7 @@ composer require "snower/forsun-laravel"
 
 * 在 config/app.php 注册 ServiceProvider 和 Facade
 
-```
+```php
 'providers' => [
     // ...
     Snower\LaravelForsun\ServiceProvider::class,
@@ -48,7 +50,7 @@ composer require "snower/forsun-laravel"
 
 * 创建配置文件
 
-```
+```bash
 php artisan vendor:publish --provider="Snower\LaravelForsun\ServiceProvider"
 ```
 
@@ -60,7 +62,7 @@ php artisan vendor:publish --provider="Snower\LaravelForsun\ServiceProvider"
 
 * Artisan 命令调度。
 
-```
+```php
 
 //不指定name是自动生成
 Forsun::plan()->command('emails:send --force')->daily();
@@ -71,25 +73,25 @@ Forsun::plan('email')->command(EmailsCommand::class, ['--force'])->daily();
 
 * 队列任务调度
 
-```
+```php
 Forsun::plan()->job(new Heartbeat)->everyFiveMinutes();
 ```
 
 * Shell 命令调度
 
-```
+```php
 Forsun::plan()->exec('node /home/forge/script.js')->daily();
 ```
 
 * Event事件调度
 
-```
+```php
 Forsun::plan()->fire('testevent', [])->everyMinute();
 ```
 
 * Http事件调度
 
-```
+```php
 Forsun::plan()->http('http://www.baidu.com')->everyMinute();
 ```
 
@@ -101,7 +103,7 @@ Forsun::plan()->http('http://www.baidu.com')->everyMinute();
 
 ### 移除调度
 
-```
+```php
 $plan = Forsun::plan()->command('emails:send --force')->daily();
 $plan->remove();
 
@@ -136,7 +138,7 @@ Forsun::remove($plan_name);
 
 ### 驱动原生Laravel Schedule运行
 
-```
+```bash
 #注册
 php artisan forsun:schedule:register
 

@@ -1,8 +1,10 @@
 ---
 title: 高性能千万级定时任务管理服务forsun使用详解
+date: 2018-03-04 14:58:48
+tags: forsun
 ---
 
-Forsun高性能高精度定时服务，轻松管理千万级定时任务。
+forsun高性能高精度定时服务，轻松管理千万级定时任务。
 项目地址： https://github.com/snower/forsun
 
 * 使用 linux 系统定时器提供精确到秒级的定时调度，长时间运行保证无误差。
@@ -22,20 +24,22 @@ Forsun高性能高精度定时服务，轻松管理千万级定时任务。
 
 使用pip自动安装
 
-```
+```bash
 pip install forsun
 ```
 
 帮助
 
-```
+```bash
 forsund -h
-usage: forsund [-h] [--bind BIND_HOST] [--port BIND_PORT] [--demon DEMON]
+usage: forsund [-h] [--conf CONF] [--bind BIND_HOST] [--port BIND_PORT]
+               [--http HTTP_BIND] [--demon [DEMON]] [--nodemon [NODEMON]]
                [--log LOG_FILE] [--log-level LOG_LEVEL] [--driver DRIVER]
                [--driver-mem-store-file STORE_MEM_STORE_FILE]
                [--driver-redis-host DRIVER_REDIS_HOST]
                [--driver-redis-port DRIVER_REDIS_PORT]
                [--driver-redis-db DRIVER_REDIS_DB]
+               [--driver-redis-password DRIVER_REDIS_PASSWORD]
                [--driver-redis-prefix DRIVER_REDIS_PREFIX]
                [--driver-redis-server-id DRIVER_REDIS_SERVER_ID]
                [--extension-path EXTENSION_PATH] [--extension EXTENSIONS]
@@ -44,22 +48,26 @@ High-performance timing scheduling service
 
 optional arguments:
   -h, --help            show this help message and exit
-  --bind BIND_HOST      bind host (default: 0.0.0.0)
+  --conf CONF           conf filename
+  --bind BIND_HOST      bind host (default: 127.0.0.1)
   --port BIND_PORT      bind port (default: 6458)
-  --demon DEMON         run demon mode
+  --http HTTP_BIND      bind http server (default: ) example: 127.0.0.1:80
+  --demon [DEMON]       run demon mode
+  --nodemon [NODEMON]   run no demon mode
   --log LOG_FILE        log file
   --log-level LOG_LEVEL
                         log level (defaul: INFO)
   --driver DRIVER       store driver mem or redis (defaul: mem)
   --driver-mem-store-file STORE_MEM_STORE_FILE
-                        store mem driver store file (defaul:
-                        /tmp/forsun.session)
+                        store mem driver store file (defaul: ~/.forsun.dump)
   --driver-redis-host DRIVER_REDIS_HOST
                         store reids driver host (defaul: 127.0.0.1)
   --driver-redis-port DRIVER_REDIS_PORT
                         store reids driver port (defaul: 6379)
   --driver-redis-db DRIVER_REDIS_DB
                         store reids driver db (defaul: 0)
+  --driver-redis-password DRIVER_REDIS_PASSWORD
+                        store reids driver password (defaul: )
   --driver-redis-prefix DRIVER_REDIS_PREFIX
                         store reids driver key prefix (defaul: forsun)
   --driver-redis-server-id DRIVER_REDIS_SERVER_ID
@@ -72,13 +80,13 @@ optional arguments:
 
 使用内存持久化存储启动：
 
-```
+```bash
 forsund --bind=0.0.0.0 --log=/var/log/forsun.log --log-level=INFO --driver=mem --driver-mem-store-file=/var/lib/fousun/forsun.session --demon
 ```
 
 使用redis持久化存储启动：
 
-```
+```bash
 forsund --bind=0.0.0.0 --log=/var/log/forsun.log --log-level=INFO --driver=redis --driver-redis-host=127.0.0.1 --driver-redis-db=1 --demon
 ```
 
@@ -88,7 +96,7 @@ forsund --bind=0.0.0.0 --log=/var/log/forsun.log --log-level=INFO --driver=redis
 
 命令行帮助
 
-```
+```bash
 forsun -h
 usage: forsun [-h] [--host HOST] [--port PORT] [--exe EXECUTE] [cmd]
 
@@ -106,7 +114,7 @@ optional arguments:
 
 延时运行示例
 
-```
+```bash
 ＃每五秒运行redis命令，共运行一次
 forsun "set redis */5/1 * * * * * redis 'host=172.16.0.2;command=\'SET b 1 EX 300\'"
 ＃每五秒运行shell命令，共运行二次
@@ -123,7 +131,7 @@ forsun "set mysql */5/1 * * * * * mysql 'host=172.16.0.2;user=root;passwd=123456
 
 定时运行示例
 
-```
+```bash
 #于每天16:32:00运行redis命令
 forsun "set redis 0 32 16 * * * redis 'host=172.16.0.2;command=\'SET b 1 EX 300\'"
 #于每小时32:00运行shell命令
