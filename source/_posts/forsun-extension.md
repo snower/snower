@@ -6,12 +6,13 @@ tags: forsun
 
 forsun是一个高性能高精度定时服务，可以轻松管理千万级定时任务。
 项目地址： https://github.com/snower/forsun
+或者看看[高性能千万级定时任务管理服务forsun使用详解](https://blog.snower.me/2020/03/20/forsun-introduction/)
 
 forsun内置支持 shell、http、redis、thrift、beanstalk、mysql 六种到时触发回调执行器，但是很多时候自己的项目需求千奇百怪，单一的内置执行器并不能很好的在自己的项目中整合，所以forsun也支持通过扩展Extension开发的方式将自己编写的触发执行器Action注册进去。
 
 那么我们就来轻松愉快实现一个整合celery的扩展吧。
 
-
+<!-- more -->
 
 # 示例(实现一个celery执行器扩展)
 

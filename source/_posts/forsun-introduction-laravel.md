@@ -16,6 +16,8 @@ laravel插件项目地址： https://github.com/snower/forsun-laravel
 * 支持驱动原生Laravel Schedule运行。
 * 支持创建延时任务和定时到期任务，和原生Laravel Schedule保持相同接口，轻松使用。
 
+<!-- more -->
+
 ## 背景 ##
 
 在实际项目中，存在大量需要定时或是延时触发的任务，比如电商中，延时需要检查订单是否支付成功，是否配送成功，定时给用户推送提醒等等，常规做法是用 crontab 每分钟扫码数据看是否到达时间，繁琐且扩展性伸缩性较差。
