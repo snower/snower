@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
@@ -17,13 +17,14 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"blog.snower.com","root":"/","scheme":"Muse","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"blog.snower.com","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta property="og:type" content="website">
 <meta property="og:title" content="Snower">
 <meta property="og:url" content="http://blog.snower.com/index.html">
 <meta property="og:site_name" content="Snower">
+<meta property="og:locale" content="zh_CN">
 <meta property="article:author" content="snower">
 <meta name="twitter:card" content="summary">
 
@@ -36,7 +37,7 @@
     sidebar: "",
     isHome : true,
     isPost : false,
-    lang   : 'default'
+    lang   : 'zh-CN'
   };
 </script>
 
@@ -80,7 +81,7 @@
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="Toggle navigation bar">
+    <div class="toggle" aria-label="切换导航栏">
       <span class="toggle-line toggle-line-first"></span>
       <span class="toggle-line toggle-line-middle"></span>
       <span class="toggle-line toggle-line-last"></span>
@@ -110,12 +111,22 @@
   <ul id="menu" class="menu">
         <li class="menu-item menu-item-home">
 
-    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
 
   </li>
   </ul>
@@ -143,337 +154,7 @@
         
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://blog.snower.com/2020/03/20/forsun-introduction/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="snower">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Snower">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/20/forsun-introduction/" class="post-title-link" itemprop="url">高性能千万级定时任务管理服务forsun使用详解</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-20 15:34:53" itemprop="dateCreated datePublished" datetime="2020-03-20T15:34:53+08:00">2020-03-20</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>forsun高性能高精度定时服务，轻松管理千万级定时任务。<br>项目地址： <a href="https://github.com/snower/forsun" target="_blank" rel="noopener">https://github.com/snower/forsun</a></p>
-<ul>
-<li>使用 linux 系统定时器提供精确到秒级的定时调度，长时间运行保证无误差。</li>
-<li>支持本地内存存储和 redis 持久化存储，使用 redis 可轻松管理数千万定时任务。</li>
-<li>支持命令行创建删除任务，支持Apache Thrift接口调用创建和删除更新定时任务信息。</li>
-<li>支持 shell、http、redis、thrift、beanstalk、mysql 六种到时触发回调方式，并可以通过扩展轻松自定义回调器。</li>
-</ul>
-<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>在实际项目中，存在大量需要定时或是延时触发的任务，比如电商中，延时需要检查订单是否支付成功，是否配送成功，定时给用户推送提醒等等，常规做法是用 crontab 每分钟扫码数据看是否到达时间，繁琐且扩展性伸缩性较差。</p>
-<p>使用 forsun 服务，可以简单的针对每一个订单创建一个定时任务，配合异步队列，可以轻松实现扩展性伸缩性，Apache Thrift 的编程接口也可以很容易的和 celery、laravel 配合。 </p>
-<p>其他场景下，比如失败延时重试，使用 forsun 定时服务也可以很简单就可以实现。</p>
-<h1 id="安装启动"><a href="#安装启动" class="headerlink" title="安装启动"></a>安装启动</h1><p>使用pip自动安装</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install forsun</span><br></pre></td></tr></table></figure>
-
-<p>帮助</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">forsund -h</span><br><span class="line">usage: forsund [-h] [--conf CONF] [--<span class="built_in">bind</span> BIND_HOST] [--port BIND_PORT]</span><br><span class="line">               [--http HTTP_BIND] [--demon [DEMON]] [--nodemon [NODEMON]]</span><br><span class="line">               [--<span class="built_in">log</span> LOG_FILE] [--<span class="built_in">log</span>-level LOG_LEVEL] [--driver DRIVER]</span><br><span class="line">               [--driver-mem-store-file STORE_MEM_STORE_FILE]</span><br><span class="line">               [--driver-redis-host DRIVER_REDIS_HOST]</span><br><span class="line">               [--driver-redis-port DRIVER_REDIS_PORT]</span><br><span class="line">               [--driver-redis-db DRIVER_REDIS_DB]</span><br><span class="line">               [--driver-redis-password DRIVER_REDIS_PASSWORD]</span><br><span class="line">               [--driver-redis-prefix DRIVER_REDIS_PREFIX]</span><br><span class="line">               [--driver-redis-server-id DRIVER_REDIS_SERVER_ID]</span><br><span class="line">               [--extension-path EXTENSION_PATH] [--extension EXTENSIONS]</span><br><span class="line"></span><br><span class="line">High-performance timing scheduling service</span><br><span class="line"></span><br><span class="line">optional arguments:</span><br><span class="line">  -h, --<span class="built_in">help</span>            show this <span class="built_in">help</span> message and <span class="built_in">exit</span></span><br><span class="line">  --conf CONF           conf filename</span><br><span class="line">  --<span class="built_in">bind</span> BIND_HOST      <span class="built_in">bind</span> host (default: 127.0.0.1)</span><br><span class="line">  --port BIND_PORT      <span class="built_in">bind</span> port (default: 6458)</span><br><span class="line">  --http HTTP_BIND      <span class="built_in">bind</span> http server (default: ) example: 127.0.0.1:80</span><br><span class="line">  --demon [DEMON]       run demon mode</span><br><span class="line">  --nodemon [NODEMON]   run no demon mode</span><br><span class="line">  --<span class="built_in">log</span> LOG_FILE        <span class="built_in">log</span> file</span><br><span class="line">  --<span class="built_in">log</span>-level LOG_LEVEL</span><br><span class="line">                        <span class="built_in">log</span> level (defaul: INFO)</span><br><span class="line">  --driver DRIVER       store driver mem or redis (defaul: mem)</span><br><span class="line">  --driver-mem-store-file STORE_MEM_STORE_FILE</span><br><span class="line">                        store mem driver store file (defaul: ~/.forsun.dump)</span><br><span class="line">  --driver-redis-host DRIVER_REDIS_HOST</span><br><span class="line">                        store reids driver host (defaul: 127.0.0.1)</span><br><span class="line">  --driver-redis-port DRIVER_REDIS_PORT</span><br><span class="line">                        store reids driver port (defaul: 6379)</span><br><span class="line">  --driver-redis-db DRIVER_REDIS_DB</span><br><span class="line">                        store reids driver db (defaul: 0)</span><br><span class="line">  --driver-redis-password DRIVER_REDIS_PASSWORD</span><br><span class="line">                        store reids driver password (defaul: )</span><br><span class="line">  --driver-redis-prefix DRIVER_REDIS_PREFIX</span><br><span class="line">                        store reids driver key prefix (defaul: forsun)</span><br><span class="line">  --driver-redis-server-id DRIVER_REDIS_SERVER_ID</span><br><span class="line">                        store reids driver server id (defaul: 0)</span><br><span class="line">  --extension-path EXTENSION_PATH</span><br><span class="line">                        extension path</span><br><span class="line">  --extension EXTENSIONS</span><br><span class="line">                        extension name</span><br></pre></td></tr></table></figure>
-
-<p>使用内存持久化存储启动：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">forsund --<span class="built_in">bind</span>=0.0.0.0 --<span class="built_in">log</span>=/var/<span class="built_in">log</span>/forsun.log --<span class="built_in">log</span>-level=INFO --driver=mem --driver-mem-store-file=/var/lib/fousun/forsun.session --demon</span><br></pre></td></tr></table></figure>
-
-<p>使用redis持久化存储启动：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">forsund --<span class="built_in">bind</span>=0.0.0.0 --<span class="built_in">log</span>=/var/<span class="built_in">log</span>/forsun.log --<span class="built_in">log</span>-level=INFO --driver=redis --driver-redis-host=127.0.0.1 --driver-redis-db=1 --demon</span><br></pre></td></tr></table></figure>
-
-<p>注意：使用mem存储时只有进程正常退出时才会序列化任务保存到本地文件，下次启动时可能会丢失任务，建议使用性能更高的redis存储方式。</p>
-<h1 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h1><p>命令行帮助</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">forsun -h</span><br><span class="line">usage: forsun [-h] [--host HOST] [--port PORT] [--exe EXECUTE] [cmd]</span><br><span class="line"></span><br><span class="line">High-performance timing scheduling service</span><br><span class="line"></span><br><span class="line">positional arguments:</span><br><span class="line">  cmd            execute cmd (default: )</span><br><span class="line"></span><br><span class="line">optional arguments:</span><br><span class="line">  -h, --<span class="built_in">help</span>     show this <span class="built_in">help</span> message and <span class="built_in">exit</span></span><br><span class="line">  --host HOST    host (default: 127.0.0.1)</span><br><span class="line">  --port PORT    port (default: 6458)</span><br><span class="line">  --exe EXECUTE  execute cmd (default: )</span><br></pre></td></tr></table></figure>
-
-<p>延时运行示例</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">＃每五秒运行redis命令，共运行一次</span><br><span class="line">forsun <span class="string">"set redis */5/1 * * * * * redis 'host=172.16.0.2;command=\'SET b 1 EX 300\'"</span></span><br><span class="line">＃每五秒运行shell命令，共运行二次</span><br><span class="line">forsun <span class="string">"set shell */5/2 * * * * * shell 'cmd=ls"</span></span><br><span class="line">＃每五秒运行beanstalk命令，共运行一次</span><br><span class="line">forsun <span class="string">"set beanstalk */5/1 * * * * * beanstalk 'host=10.4.14.14;name=etask;body=&#123;&#125;'"</span></span><br><span class="line">＃每五秒请求thrift接口，重复运行</span><br><span class="line">forsun <span class="string">"set thrift */5/0 * * * * * thrift 'host=10.4.14.14;port=4220"</span></span><br><span class="line">＃每五秒请求http接口，共运行一次</span><br><span class="line">forsun <span class="string">"set http */5/1 * * * * * http 'url=\'http://www.baidu.com\''"</span></span><br><span class="line">＃每五秒运行mysql命令，共运行一次</span><br><span class="line">forsun <span class="string">"set mysql */5/1 * * * * * mysql 'host=172.16.0.2;user=root;passwd=123456;db=test;sql=\'update test set created_at=now() where id=1\'"</span></span><br></pre></td></tr></table></figure>
-
-<p>定时运行示例</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#于每天16:32:00运行redis命令</span></span><br><span class="line">forsun <span class="string">"set redis 0 32 16 * * * redis 'host=172.16.0.2;command=\'SET b 1 EX 300\'"</span></span><br><span class="line"><span class="comment">#于每小时32:00运行shell命令</span></span><br><span class="line">forsun <span class="string">"set shell 0 32 ＊ * * * shell 'cmd=ls"</span></span><br><span class="line"><span class="comment">#于每分钟1秒时运行beanstalk命令</span></span><br><span class="line">forsun <span class="string">"set beanstalk 1 * * * * * beanstalk 'host=10.4.14.14;name=etask;body=&#123;&#125;'"</span></span><br><span class="line"><span class="comment">#于每月3日16:32:00请求thrift接口</span></span><br><span class="line">forsun <span class="string">"set thrift 0 32 16 3 * * thrift 'host=10.4.14.14;port=4220"</span></span><br><span class="line"><span class="comment">#于每天16:32:00请求http接口</span></span><br><span class="line">forsun <span class="string">"set http 0 32 16 * * * http 'url=\'http://www.baidu.com\''"</span></span><br><span class="line"><span class="comment">#于每天16:32:00运行mysql命令</span></span><br><span class="line">forsun <span class="string">"set mysql 32 16 * * * mysql 'host=172.16.0.2;user=root;passwd=123456;db=test;sql=\'update test set created_at=now() where id=1\'"</span></span><br></pre></td></tr></table></figure>
-
-<h1 id="Apache-Thrift接口文件定义"><a href="#Apache-Thrift接口文件定义" class="headerlink" title="Apache Thrift接口文件定义"></a>Apache Thrift接口文件定义</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">exception ForsunPlanError&#123;</span><br><span class="line">    1:i16 code,</span><br><span class="line">    2:string message</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">struct ForsunPlan &#123;</span><br><span class="line">    1: required bool is_time_out,</span><br><span class="line">    2: required string key,</span><br><span class="line">    3: required i16 second,</span><br><span class="line">    4: i16 minute &#x3D; -1,</span><br><span class="line">    5: i16 hour &#x3D; -1,</span><br><span class="line">    6: i16 day &#x3D; -1,</span><br><span class="line">    7: i16 month &#x3D; -1,</span><br><span class="line">    8: i16 week &#x3D; -1,</span><br><span class="line">    9: required i32 next_time,</span><br><span class="line">    10: i16 status &#x3D; 0,</span><br><span class="line">    11: i16 count &#x3D; 0,</span><br><span class="line">    12: i16 current_count &#x3D; 0,</span><br><span class="line">    13: i32 last_timeout &#x3D; 0,</span><br><span class="line">    14:string action &#x3D; &quot;shell&quot;,</span><br><span class="line">    15:map&lt;string, string&gt; params &#x3D; &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">service Forsun&#123;</span><br><span class="line">    i16 ping(),</span><br><span class="line">    #创建固定时间运行任务</span><br><span class="line">    ForsunPlan create(1:string key, 2:i16 second, 3:i16 minute &#x3D; -1, 4:i16 hour &#x3D; -1, 5:i16 day &#x3D; -1, 6:i16 month &#x3D; -1, 7:i16 week &#x3D; -1, 8:string action&#x3D;&quot;shell&quot;, 9:map&lt;string, string&gt; params&#x3D;&#123;&#125;) throws (1:ForsunPlanError err),</span><br><span class="line">    ＃创建延时运行任务</span><br><span class="line">    ForsunPlan createTimeout(1:string key, 2:i16 second, 3:i16 minute &#x3D; -1, 4:i16 hour &#x3D; -1, 5:i16 day &#x3D; -1, 6:i16 month &#x3D; -1, 7:i16 week &#x3D; -1, 8:i16 count&#x3D;1, 9:string action&#x3D;&quot;shell&quot;, 10:map&lt;string, string&gt; params&#x3D;&#123;&#125;) throws (1:ForsunPlanError err),</span><br><span class="line">    ＃删除任务</span><br><span class="line">    ForsunPlan remove(1:string key) throws (1:ForsunPlanError err),</span><br><span class="line">    ＃获取任务信息</span><br><span class="line">    ForsunPlan get(1:string key) throws (1:ForsunPlanError err),</span><br><span class="line">    ＃获取当前即将运行任务列表</span><br><span class="line">    list&lt;ForsunPlan&gt; getCurrent(),</span><br><span class="line">    ＃获取某个时间运行任务列表</span><br><span class="line">    list&lt;ForsunPlan&gt; getTime(1:i32 timestamp),</span><br><span class="line">    ＃查询某些key前缀任务列表</span><br><span class="line">    list&lt;string&gt; getKeys(1:string prefix),</span><br><span class="line">    ＃thrift回调器请求函数定义</span><br><span class="line">    void forsun_call(1:string key, 2:i32 ts, 3:map&lt;string, string&gt; params)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="回调器参数详解"><a href="#回调器参数详解" class="headerlink" title="回调器参数详解"></a>回调器参数详解</h1><p>回调器参数为create和createTimeout最后一个参数params key和value的map。</p>
-<h2 id="shell参数"><a href="#shell参数" class="headerlink" title="shell参数"></a>shell参数</h2><ul>
-<li>cmd shell命令</li>
-<li>cwd 工作目录</li>
-<li>env 环境变量，以;分割＝号连接的字符串，如：a=1;b=c</li>
-</ul>
-<h2 id="http参数"><a href="#http参数" class="headerlink" title="http参数"></a>http参数</h2><ul>
-<li>url 请求接口URL字符串</li>
-<li>method 请求方法，只支持get,post,put,delete,head五种方法</li>
-<li>body 请求体字符串</li>
-<li>header_ 以header_为前缀的key都会放到请求header中</li>
-<li>auth_username 校验用户名</li>
-<li>auth_password 校验密码</li>
-<li>auth_mode 校验方法</li>
-<li>user_agent 请求User－Agent</li>
-<li>connect_timeout 连接超时时间，默认5秒</li>
-<li>request_timeout 请求超时时间，默认60秒</li>
-</ul>
-<h2 id="redis参数"><a href="#redis参数" class="headerlink" title="redis参数"></a>redis参数</h2><ul>
-<li>host redis服务器地址，默认127.0.0.1</li>
-<li>port redis服务器端口，默认6379</li>
-<li>selected_db redis运行命令db</li>
-<li>max_connections 连接redis服务器最大连接数，第一次连接时的命令中的值有效</li>
-<li>command 需要执行的命令，多条命令以;分割</li>
-</ul>
-<h2 id="mysql参数"><a href="#mysql参数" class="headerlink" title="mysql参数"></a>mysql参数</h2><ul>
-<li>host mysql服务器地址，默认127.0.0.1</li>
-<li>port mysql服务器端口，默认3306</li>
-<li>db mysql运行命令db，默认mysql</li>
-<li>user mysql登陆用户名，默认root</li>
-<li>passwd mysql登陆密码，默认空字符串</li>
-<li>max_connections 连接redis服务器最大连接数，第一次连接时的命令中的值有效</li>
-<li>sql 需要执行的sql</li>
-</ul>
-<h2 id="beanstalk参数"><a href="#beanstalk参数" class="headerlink" title="beanstalk参数"></a>beanstalk参数</h2><ul>
-<li>host beanstalk服务器地址，默认127.0.0.1</li>
-<li>port beanstalk服务器端口，默认11300</li>
-<li>name 队列名称，默认default</li>
-<li>body 推送的消息体</li>
-</ul>
-<h2 id="thrift参数"><a href="#thrift参数" class="headerlink" title="thrift参数"></a>thrift参数</h2><p>回调thrift接口时，固定请求void forsun_call(1:string key, 2:i32 ts, 3:map&lt;string, string&gt; params)该函数，第三个params参数即为任务定义时的params值。</p>
-<ul>
-<li>host thrift服务器地址，默认127.0.0.1</li>
-<li>port thrift服务器端口，默认5643</li>
-<li>max_connections 连接thrift服务器最大连接数，第一次连接时的命令中的值有效</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://blog.snower.com/2020/03/20/forsun-introduction-laravel/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="snower">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Snower">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/20/forsun-introduction-laravel/" class="post-title-link" itemprop="url">高性能千万级定时任务管理服务forsun laravel插件使用详解</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-20 15:34:38" itemprop="dateCreated datePublished" datetime="2020-03-20T15:34:38+08:00">2020-03-20</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>forsun高性能高精度定时服务，轻松管理千万级定时任务。</p>
-<p>定时服务项目地址：<a href="https://github.com/snower/forsun" target="_blank" rel="noopener">https://github.com/snower/forsun</a></p>
-<p>laravel插件项目地址： <a href="https://github.com/snower/forsun-laravel" target="_blank" rel="noopener">https://github.com/snower/forsun-laravel</a></p>
-<ul>
-<li>轻松支持千万级定时任务调度。</li>
-<li>定时任务触发推送到Queue，轻松支持跨机器和共性能分布式。</li>
-<li>支持任务到期触发command、Job、Shell、Http和Event。</li>
-<li>支持驱动原生Laravel Schedule运行。</li>
-<li>支持创建延时任务和定时到期任务，和原生Laravel Schedule保持相同接口，轻松使用。</li>
-</ul>
-<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在实际项目中，存在大量需要定时或是延时触发的任务，比如电商中，延时需要检查订单是否支付成功，是否配送成功，定时给用户推送提醒等等，常规做法是用 crontab 每分钟扫码数据看是否到达时间，繁琐且扩展性伸缩性较差。</p>
-<p>使用 forsun 服务，可以简单的针对每一个订单创建一个定时任务，配合异步队列，可以轻松实现扩展性伸缩性，Apache Thrift 的编程接口也可以很容易的和 celery、laravel 配合。 </p>
-<p>其他场景下，比如失败延时重试，使用 forsun 定时服务也可以很简单就可以实现。</p>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ul>
-<li>安装启动forsun服务，详情请看 <a href="https://blog.snower.me/2018/03/05/forsun-introduction/" target="_blank" rel="noopener">https://blog.snower.me/2018/03/05/forsun-introduction/</a>。</li>
-<li>composer安装forsun-laravel。</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer require <span class="string">"snower/forsun-laravel"</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><ul>
-<li>在 config/app.php 注册 ServiceProvider 和 Facade</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'providers'</span> =&gt; [</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    Snower\LaravelForsun\ServiceProvider::class,</span><br><span class="line">],</span><br><span class="line"><span class="string">'aliases'</span> =&gt; [</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="string">'Forsun'</span> =&gt; Snower\LaravelForsun\Facade::class,</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>创建配置文件</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php artisan vendor:publish --provider=<span class="string">"Snower\LaravelForsun\ServiceProvider"</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>修改应用根目录下的 config/forsun.php 中对应的参数即可。</li>
-</ul>
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h3 id="定义调度"><a href="#定义调度" class="headerlink" title="定义调度"></a>定义调度</h3><ul>
-<li>Artisan 命令调度。</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//不指定name是自动生成</span></span><br><span class="line">Forsun::plan()-&gt;command(<span class="string">'emails:send --force'</span>)-&gt;daily();</span><br><span class="line"></span><br><span class="line"><span class="comment">//指定name</span></span><br><span class="line">Forsun::plan(<span class="string">'email'</span>)-&gt;command(EmailsCommand::class, [<span class="string">'--force'</span>])-&gt;daily();</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>队列任务调度</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Forsun::plan()-&gt;job(<span class="keyword">new</span> Heartbeat)-&gt;everyFiveMinutes();</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>Shell 命令调度</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Forsun::plan()-&gt;exec(<span class="string">'node /home/forge/script.js'</span>)-&gt;daily();</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>Event事件调度</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Forsun::plan()-&gt;fire(<span class="string">'testevent'</span>, [])-&gt;everyMinute();</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>Http事件调度</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Forsun::plan()-&gt;http(<span class="string">'http://www.baidu.com'</span>)-&gt;everyMinute();</span><br></pre></td></tr></table></figure>
-
-<p>注意：</p>
-<ul>
-<li>每个任务只能设置一次调度频率。</li>
-<li>不支持任务输出、任务钩子及维护模式。</li>
-<li>Forsun::plan是不指定任务名时自动生成，每个任务名必须唯一，相同任务名重复定义将会自动覆盖。</li>
-</ul>
-<h3 id="移除调度"><a href="#移除调度" class="headerlink" title="移除调度"></a>移除调度</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$plan = Forsun::plan()-&gt;command(<span class="string">'emails:send --force'</span>)-&gt;daily();</span><br><span class="line">$plan-&gt;remove();</span><br><span class="line"></span><br><span class="line">$plan = Forsun::plan()-&gt;command(<span class="string">'emails:send --force'</span>)-&gt;daily();</span><br><span class="line">$plan_name = $plan-&gt;getName();</span><br><span class="line">Forsun::remove($plan_name);</span><br></pre></td></tr></table></figure>
-
-<h3 id="调度频率设置"><a href="#调度频率设置" class="headerlink" title="调度频率设置"></a>调度频率设置</h3><table>
-<thead>
-<tr>
-<th>方法</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>-&gt;hourly();</td>
-<td>每小时运行</td>
-</tr>
-<tr>
-<td>-&gt;hourlyAt(17);</td>
-<td>每小时的第 17 分钟执行一次任务</td>
-</tr>
-<tr>
-<td>-&gt;daily();</td>
-<td>每天午夜执行一次任务</td>
-</tr>
-<tr>
-<td>-&gt;dailyAt(‘13:00’);</td>
-<td>每天的 13:00 执行一次任务</td>
-</tr>
-<tr>
-<td>-&gt;monthly();</td>
-<td>每月执行一次任务</td>
-</tr>
-<tr>
-<td>-&gt;monthlyOn(4, ‘15:00’);</td>
-<td>在每个月的第四天的 15:00 执行一次任务</td>
-</tr>
-<tr>
-<td>-&gt;everyMinute();</td>
-<td>每分钟执行一次任务</td>
-</tr>
-<tr>
-<td>-&gt;everyFiveMinutes();</td>
-<td>每五分钟执行一次任务</td>
-</tr>
-<tr>
-<td>-&gt;everyTenMinutes();</td>
-<td>每十分钟执行一次任务</td>
-</tr>
-<tr>
-<td>-&gt;everyFifteenMinutes();</td>
-<td>每十五分钟执行一次任务</td>
-</tr>
-<tr>
-<td>-&gt;everyThirtyMinutes();</td>
-<td>每半小时执行一次任务</td>
-</tr>
-<tr>
-<td>-&gt;at(strtoetime(“2018-03-05 12:32:12”));</td>
-<td>在指定时间2018-03-05 12:32:12运行一次</td>
-</tr>
-<tr>
-<td>-&gt;interval(10);</td>
-<td>从当前时间开始计算每10秒运行一次</td>
-</tr>
-<tr>
-<td>-&gt;later(5);</td>
-<td>从当前时间开始计算稍后5秒运行一次</td>
-</tr>
-<tr>
-<td>-&gt;delay(30);</td>
-<td>从当前时间开始计算稍后30秒运行一次</td>
-</tr>
-</tbody></table>
-<p>需要复杂定时控制建议生成多个定时任务或是在处理器中再次发起定时任务计划更简便同时也性能更高。</p>
-<p>调度器应该尽可能使用Event或是Job通过Queue Work可以更高性能运行。</p>
-<h3 id="驱动原生Laravel-Schedule运行"><a href="#驱动原生Laravel-Schedule运行" class="headerlink" title="驱动原生Laravel Schedule运行"></a>驱动原生Laravel Schedule运行</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#注册</span></span><br><span class="line">php artisan forsun:schedule:register</span><br><span class="line"></span><br><span class="line"><span class="comment">#取消注册</span></span><br><span class="line">php artisan forsun:schedule:unregister</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://blog.snower.com/2020/03/20/forsun-extension/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -496,10 +177,10 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              <span class="post-meta-item-text">Posted on</span>
+              <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="Created: 2020-03-20 10:58:48 / Modified: 15:35:18" itemprop="dateCreated datePublished" datetime="2020-03-20T10:58:48+08:00">2020-03-20</time>
+              <time title="创建时间：2020-03-20 10:58:48 / 修改时间：23:31:54" itemprop="dateCreated datePublished" datetime="2020-03-20T10:58:48+08:00">2020-03-20</time>
             </span>
 
           
@@ -513,33 +194,176 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>forsun是一个高性能高精度定时服务，可以轻松管理千万级定时任务。<br>项目地址： <a href="https://github.com/snower/forsun" target="_blank" rel="noopener">https://github.com/snower/forsun</a></p>
+          <p>forsun是一个高性能高精度定时服务，可以轻松管理千万级定时任务。<br>项目地址： <a href="https://github.com/snower/forsun" target="_blank" rel="noopener">https://github.com/snower/forsun</a><br>或者看看<a href="https://blog.snower.me/2020/03/20/forsun-introduction/" target="_blank" rel="noopener">高性能千万级定时任务管理服务forsun使用详解</a></p>
 <p>forsun内置支持 shell、http、redis、thrift、beanstalk、mysql 六种到时触发回调执行器，但是很多时候自己的项目需求千奇百怪，单一的内置执行器并不能很好的在自己的项目中整合，所以forsun也支持通过扩展Extension开发的方式将自己编写的触发执行器Action注册进去。</p>
 <p>那么我们就来轻松愉快实现一个整合celery的扩展吧。</p>
-<h1 id="示例-实现一个celery执行器扩展"><a href="#示例-实现一个celery执行器扩展" class="headerlink" title="示例(实现一个celery执行器扩展)"></a>示例(实现一个celery执行器扩展)</h1><h3 id="添加代码celery-extension-py"><a href="#添加代码celery-extension-py" class="headerlink" title="添加代码celery_extension.py"></a>添加代码celery_extension.py</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> logging</span><br><span class="line"><span class="keyword">from</span> concurrent.futures <span class="keyword">import</span> ThreadPoolExecutor</span><br><span class="line"><span class="keyword">from</span> celery <span class="keyword">import</span> Celery</span><br><span class="line"><span class="keyword">from</span> forsun.extension <span class="keyword">import</span> Extension</span><br><span class="line"><span class="keyword">from</span> forsun.action.action <span class="keyword">import</span> Action</span><br><span class="line"></span><br><span class="line">app = Celery(<span class="string">'hello'</span>, broker=<span class="string">'amqp://guest@localhost//'</span>)</span><br><span class="line">executor = ThreadPoolExecutor()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.task</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">'hello world'</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.task</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add</span><span class="params">(x, y)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> x + y</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CeleryAction</span><span class="params">(Action)</span>:</span></span><br><span class="line">    METHODS = &#123;</span><br><span class="line">        <span class="string">"hello"</span>: hello,</span><br><span class="line">        <span class="string">"add"</span>: add,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">execute</span><span class="params">(self, *args, **kwargs)</span>:</span></span><br><span class="line">        method = self.params.get(<span class="string">"method"</span>, <span class="string">''</span>)</span><br><span class="line">        args = json.loads(self.params.get(<span class="string">'args'</span>, <span class="string">'[]'</span>))</span><br><span class="line">        kwargs = json.loads(self.params.get(<span class="string">'kwargs'</span>, <span class="string">'&#123;&#125;'</span>))</span><br><span class="line">        <span class="keyword">if</span> method <span class="keyword">not</span> <span class="keyword">in</span> self.METHODS:</span><br><span class="line">            logging.info(<span class="string">"celery action execute unknow method %s"</span>, method)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        executor.submit(self.METHODS[method], *tuple(args), **kwargs)</span><br><span class="line">        logging.info(<span class="string">"celery action execute %s"</span>, method)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CeleryExtension</span><span class="params">(Extension)</span>:</span></span><br><span class="line">    name = <span class="string">"celery"</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">register</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.register_action(<span class="string">"celery"</span>, CeleryAction)</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/03/20/forsun-extension/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
 
-<p>可以看出实现一个扩展非常简单，定义一个扩展类CeleryExtension继承自forsun.extension.Extension，添加一个执行器CeleryAction继承自forsun.extension.Action，起个名字，在扩展类register函数中注册执行器CeleryAction，搞定。</p>
-<p>当创建的定时任务到期触发时会自动调用CeleryAction的execute函数，其中当前Action实例的ts属性保存着任务触发时间，params即为创建定时的params参数，提取参数解析继续完成即可。</p>
-<p>需要注意的是因为整个forsun服务使用tornado异步IO实现，所以Action的execute会使用异步调用，如果你需要做同步阻塞调用时，推荐将需要执行的方法放到ThreadPoolExecutor去执行，这样性能会更好哦。</p>
-<h3 id="添加启动参数加载扩展"><a href="#添加启动参数加载扩展" class="headerlink" title="添加启动参数加载扩展"></a>添加启动参数加载扩展</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">forsund --<span class="built_in">bind</span>=0.0.0.0 --port=6458 --http=0.0.0.0:8001 --<span class="built_in">log</span>=/var/<span class="built_in">log</span>/forsun.log --<span class="built_in">log</span>-level=INFO --driver=mem --driver-mem-store-file=/var/lib/fousun/forsun.session --extension-path=./ --extension=celery_extension.CeleryExtension</span><br></pre></td></tr></table></figure>
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
 
-<p>如若使用conf文件配置时，那么也在conf文件中添加扩展加载参数即可。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 扩展配置</span><br><span class="line">[extension]</span><br><span class="line"></span><br><span class="line"># 扩展目录</span><br><span class="line">path&#x3D;.&#x2F;</span><br><span class="line"># 载入扩展，已;分隔</span><br><span class="line">extensions&#x3D;celery_extension.CeleryExtension</span><br></pre></td></tr></table></figure>
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://blog.snower.com/2018/03/10/forsun-introduction-laravel/">
 
-<p>这时候查看日志输出，你会发现扩展已经成功加载了。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">2020-03-20 14:09:20,650 1022 INFO register extension path .&#x2F;</span><br><span class="line">2020-03-20 14:09:20,762 1022 INFO load extension celery_extension.CeleryExtension &lt;class &#39;celery_extension.CeleryExtension&#39;&gt;</span><br><span class="line">2020-03-20 14:09:20,762 1022 INFO action register celery &lt;class &#39;celery_extension.CeleryAction&#39;&gt;</span><br></pre></td></tr></table></figure>
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="snower">
+      <meta itemprop="description" content="">
+    </span>
 
-<p>再通过info名称查看下当前状态信息，可以发现在支持的actions列表里已经有celery支持了，非常棒，现在愉快的开始自己的项目之旅吧。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">forsun info</span><br><span class="line"></span><br><span class="line">python_version: 3.6.9 (default, Nov  7 2019, 10:44:02)  [GCC 8.3.0]</span><br><span class="line">forsun_version: 0.1.3</span><br><span class="line">start_time:     2020-03-20 14:31:27.538081+08:00</span><br><span class="line">cpu_user:       0.18</span><br><span class="line">cpu_system:     0.1</span><br><span class="line">mem_rss:        28.06M</span><br><span class="line">mem_vms:        122.46M</span><br><span class="line">current_time:   2020-03-20 14:31:38+08:00</span><br><span class="line"></span><br><span class="line">stores: mem;redis</span><br><span class="line">current_store:  mem</span><br><span class="line">actions:        shell;http;redis;thrift;celery</span><br><span class="line">bind_port:      0.0.0.0:6458</span><br><span class="line">http_bind_port:</span><br><span class="line">extensions:     celery_extension.CeleryExtension</span><br></pre></td></tr></table></figure>
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Snower">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/03/10/forsun-introduction-laravel/" class="post-title-link" itemprop="url">高性能千万级定时任务管理服务forsun laravel插件使用详解</a>
+        </h1>
 
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
 
+              <time title="创建时间：2018-03-10 16:58:48" itemprop="dateCreated datePublished" datetime="2018-03-10T16:58:48+08:00">2018-03-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-20 23:31:58" itemprop="dateModified" datetime="2020-03-20T23:31:58+08:00">2020-03-20</time>
+              </span>
 
-<h3 id="Http请求测试一下"><a href="#Http请求测试一下" class="headerlink" title="Http请求测试一下"></a>Http请求测试一下</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -X PUT -H <span class="string">'Content-Type: application/json'</span> -d <span class="string">'&#123;"key": "test", "seconds": 5, "minute": 0, "hour": 0, "day": 0, "month": 0, "count": 1, "action": "celery", "params": &#123;"method": "hello"&#125;&#125;'</span> http://127.0.0.1:8001/v1/plan</span><br><span class="line"></span><br><span class="line">&#123;<span class="string">"errcode"</span>: 0, <span class="string">"errmsg"</span>: <span class="string">""</span>, <span class="string">"data"</span>: &#123;<span class="string">"key"</span>: <span class="string">"test"</span>, <span class="string">"second"</span>: 5, <span class="string">"minute"</span>: 0, <span class="string">"hour"</span>: 0, <span class="string">"day"</span>: 0, <span class="string">"month"</span>: 0, <span class="string">"week"</span>: -1, <span class="string">"status"</span>: 0, <span class="string">"count"</span>: 0, <span class="string">"is_time_out"</span>: <span class="literal">true</span>, <span class="string">"next_time"</span>: 1584657610, <span class="string">"current_count"</span>: 0, <span class="string">"last_timeout"</span>: 0, <span class="string">"created_time"</span>: 1584657605.0, <span class="string">"action"</span>: <span class="string">"celery"</span>, <span class="string">"params"</span>: &#123;<span class="string">"method"</span>: <span class="string">"hello"</span>&#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+          
 
-<p>等待5秒，你就会看到celery成功调用。</p>
-<h1 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h1><p>forsun除了可以通过Extension添加自定义执行器Action外，当然也可以通过Extension自定义实现持久化存储，这个后面咱有时间再介绍。</p>
-<p>在实际工程中我们有非常多类似订单支付超时、配送超时之类的量大而又需要可编程控制的定时调度需求，一个方便管理而又高性能精准的定时任务调度服务显然可以大大节省我们的时间，游戏那么好玩为啥不能多一点呢。</p>
+        </div>
+      </header>
 
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>forsun高性能高精度定时服务，轻松管理千万级定时任务。</p>
+<p>定时服务项目地址：<a href="https://github.com/snower/forsun" target="_blank" rel="noopener">https://github.com/snower/forsun</a></p>
+<p>laravel插件项目地址： <a href="https://github.com/snower/forsun-laravel" target="_blank" rel="noopener">https://github.com/snower/forsun-laravel</a></p>
+<ul>
+<li>轻松支持千万级定时任务调度。</li>
+<li>定时任务触发推送到Queue，轻松支持跨机器和共性能分布式。</li>
+<li>支持任务到期触发command、Job、Shell、Http和Event。</li>
+<li>支持驱动原生Laravel Schedule运行。</li>
+<li>支持创建延时任务和定时到期任务，和原生Laravel Schedule保持相同接口，轻松使用。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/03/10/forsun-introduction-laravel/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://blog.snower.com/2018/03/04/forsun-introduction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="snower">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Snower">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/03/04/forsun-introduction/" class="post-title-link" itemprop="url">高性能千万级定时任务管理服务forsun使用详解</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-03-04 14:58:48" itemprop="dateCreated datePublished" datetime="2018-03-04T14:58:48+08:00">2018-03-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-20 23:32:02" itemprop="dateModified" datetime="2020-03-20T23:32:02+08:00">2020-03-20</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>forsun高性能高精度定时服务，轻松管理千万级定时任务。<br>项目地址： <a href="https://github.com/snower/forsun" target="_blank" rel="noopener">https://github.com/snower/forsun</a></p>
+<ul>
+<li>使用 linux 系统定时器提供精确到秒级的定时调度，长时间运行保证无误差。</li>
+<li>支持本地内存存储和 redis 持久化存储，使用 redis 可轻松管理数千万定时任务。</li>
+<li>支持命令行创建删除任务，支持Apache Thrift接口调用创建和删除更新定时任务信息。</li>
+<li>支持 shell、http、redis、thrift、beanstalk、mysql 六种到时触发回调方式，并可以通过扩展轻松自定义回调器。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/03/04/forsun-introduction/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -599,10 +423,10 @@
 
       <ul class="sidebar-nav motion-element">
         <li class="sidebar-nav-toc">
-          Table of Contents
+          文章目录
         </li>
         <li class="sidebar-nav-overview">
-          Overview
+          站点概览
         </li>
       </ul>
 
@@ -622,15 +446,28 @@
           <a href="/archives/">
         
           <span class="site-state-item-count">3</span>
-          <span class="site-state-item-name">posts</span>
+          <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
         <span class="site-state-item-count">1</span>
-        <span class="site-state-item-name">tags</span>
+        <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
 </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/snower" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;snower" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/u/2002171773" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;u&#x2F;2002171773" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/snower199" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;snower199" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+  </div>
 
 
 
@@ -659,10 +496,10 @@
   </span>
   <span class="author" itemprop="copyrightHolder">snower</span>
 </div>
-  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v4.2.0
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
   </div>
   <span class="post-meta-divider">|</span>
-  <div class="theme-info">Theme – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.2
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
   </div>
 
         
@@ -688,7 +525,7 @@
 <script src="/js/motion.js"></script>
 
 
-<script src="/js/schemes/muse.js"></script>
+<script src="/js/schemes/pisces.js"></script>
 
 
 <script src="/js/next-boot.js"></script>

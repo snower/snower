@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
@@ -17,17 +17,18 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"blog.snower.com","root":"/","scheme":"Muse","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"blog.snower.com","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="forsun是一个高性能高精度定时服务，可以轻松管理千万级定时任务。项目地址： https:&#x2F;&#x2F;github.com&#x2F;snower&#x2F;forsun forsun内置支持 shell、http、redis、thrift、beanstalk、mysql 六种到时触发回调执行器，但是很多时候自己的项目需求千奇百怪，单一的内置执行器并不能很好的在自己的项目中整合，所以forsun也支持通过扩展Extensi">
+  <meta name="description" content="forsun是一个高性能高精度定时服务，可以轻松管理千万级定时任务。项目地址： https:&#x2F;&#x2F;github.com&#x2F;snower&#x2F;forsun或者看看高性能千万级定时任务管理服务forsun使用详解 forsun内置支持 shell、http、redis、thrift、beanstalk、mysql 六种到时触发回调执行器，但是很多时候自己的项目需求千奇百怪，单一的内置执行器并不能很好的在自己的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="高性能千万级定时任务管理服务forsun扩展开发之整合celery">
 <meta property="og:url" content="http://blog.snower.com/2020/03/20/forsun-extension/index.html">
 <meta property="og:site_name" content="Snower">
-<meta property="og:description" content="forsun是一个高性能高精度定时服务，可以轻松管理千万级定时任务。项目地址： https:&#x2F;&#x2F;github.com&#x2F;snower&#x2F;forsun forsun内置支持 shell、http、redis、thrift、beanstalk、mysql 六种到时触发回调执行器，但是很多时候自己的项目需求千奇百怪，单一的内置执行器并不能很好的在自己的项目中整合，所以forsun也支持通过扩展Extensi">
+<meta property="og:description" content="forsun是一个高性能高精度定时服务，可以轻松管理千万级定时任务。项目地址： https:&#x2F;&#x2F;github.com&#x2F;snower&#x2F;forsun或者看看高性能千万级定时任务管理服务forsun使用详解 forsun内置支持 shell、http、redis、thrift、beanstalk、mysql 六种到时触发回调执行器，但是很多时候自己的项目需求千奇百怪，单一的内置执行器并不能很好的在自己的">
+<meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-03-20T02:58:48.000Z">
-<meta property="article:modified_time" content="2020-03-20T07:35:18.432Z">
+<meta property="article:modified_time" content="2020-03-20T15:31:54.985Z">
 <meta property="article:author" content="snower">
 <meta property="article:tag" content="forsun">
 <meta name="twitter:card" content="summary">
@@ -41,7 +42,7 @@
     sidebar: "",
     isHome : false,
     isPost : true,
-    lang   : 'default'
+    lang   : 'zh-CN'
   };
 </script>
 
@@ -85,7 +86,7 @@
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="Toggle navigation bar">
+    <div class="toggle" aria-label="切换导航栏">
       <span class="toggle-line toggle-line-first"></span>
       <span class="toggle-line toggle-line-middle"></span>
       <span class="toggle-line toggle-line-last"></span>
@@ -115,12 +116,22 @@
   <ul id="menu" class="menu">
         <li class="menu-item menu-item-home">
 
-    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
 
   </li>
   </ul>
@@ -148,7 +159,7 @@
       
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://blog.snower.com/2020/03/20/forsun-extension/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -170,10 +181,10 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              <span class="post-meta-item-text">Posted on</span>
+              <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="Created: 2020-03-20 10:58:48 / Modified: 15:35:18" itemprop="dateCreated datePublished" datetime="2020-03-20T10:58:48+08:00">2020-03-20</time>
+              <time title="创建时间：2020-03-20 10:58:48 / 修改时间：23:31:54" itemprop="dateCreated datePublished" datetime="2020-03-20T10:58:48+08:00">2020-03-20</time>
             </span>
 
           
@@ -187,9 +198,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>forsun是一个高性能高精度定时服务，可以轻松管理千万级定时任务。<br>项目地址： <a href="https://github.com/snower/forsun" target="_blank" rel="noopener">https://github.com/snower/forsun</a></p>
+        <p>forsun是一个高性能高精度定时服务，可以轻松管理千万级定时任务。<br>项目地址： <a href="https://github.com/snower/forsun" target="_blank" rel="noopener">https://github.com/snower/forsun</a><br>或者看看<a href="https://blog.snower.me/2020/03/20/forsun-introduction/" target="_blank" rel="noopener">高性能千万级定时任务管理服务forsun使用详解</a></p>
 <p>forsun内置支持 shell、http、redis、thrift、beanstalk、mysql 六种到时触发回调执行器，但是很多时候自己的项目需求千奇百怪，单一的内置执行器并不能很好的在自己的项目中整合，所以forsun也支持通过扩展Extension开发的方式将自己编写的触发执行器Action注册进去。</p>
 <p>那么我们就来轻松愉快实现一个整合celery的扩展吧。</p>
+<a id="more"></a>
+
 <h1 id="示例-实现一个celery执行器扩展"><a href="#示例-实现一个celery执行器扩展" class="headerlink" title="示例(实现一个celery执行器扩展)"></a>示例(实现一个celery执行器扩展)</h1><h3 id="添加代码celery-extension-py"><a href="#添加代码celery-extension-py" class="headerlink" title="添加代码celery_extension.py"></a>添加代码celery_extension.py</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> logging</span><br><span class="line"><span class="keyword">from</span> concurrent.futures <span class="keyword">import</span> ThreadPoolExecutor</span><br><span class="line"><span class="keyword">from</span> celery <span class="keyword">import</span> Celery</span><br><span class="line"><span class="keyword">from</span> forsun.extension <span class="keyword">import</span> Extension</span><br><span class="line"><span class="keyword">from</span> forsun.action.action <span class="keyword">import</span> Action</span><br><span class="line"></span><br><span class="line">app = Celery(<span class="string">'hello'</span>, broker=<span class="string">'amqp://guest@localhost//'</span>)</span><br><span class="line">executor = ThreadPoolExecutor()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.task</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">'hello world'</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.task</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add</span><span class="params">(x, y)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> x + y</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CeleryAction</span><span class="params">(Action)</span>:</span></span><br><span class="line">    METHODS = &#123;</span><br><span class="line">        <span class="string">"hello"</span>: hello,</span><br><span class="line">        <span class="string">"add"</span>: add,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">execute</span><span class="params">(self, *args, **kwargs)</span>:</span></span><br><span class="line">        method = self.params.get(<span class="string">"method"</span>, <span class="string">''</span>)</span><br><span class="line">        args = json.loads(self.params.get(<span class="string">'args'</span>, <span class="string">'[]'</span>))</span><br><span class="line">        kwargs = json.loads(self.params.get(<span class="string">'kwargs'</span>, <span class="string">'&#123;&#125;'</span>))</span><br><span class="line">        <span class="keyword">if</span> method <span class="keyword">not</span> <span class="keyword">in</span> self.METHODS:</span><br><span class="line">            logging.info(<span class="string">"celery action execute unknow method %s"</span>, method)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        executor.submit(self.METHODS[method], *tuple(args), **kwargs)</span><br><span class="line">        logging.info(<span class="string">"celery action execute %s"</span>, method)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CeleryExtension</span><span class="params">(Extension)</span>:</span></span><br><span class="line">    name = <span class="string">"celery"</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">register</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.register_action(<span class="string">"celery"</span>, CeleryAction)</span><br></pre></td></tr></table></figure>
 
 <p>可以看出实现一个扩展非常简单，定义一个扩展类CeleryExtension继承自forsun.extension.Extension，添加一个执行器CeleryAction继承自forsun.extension.Action，起个名字，在扩展类register函数中注册执行器CeleryAction，搞定。</p>
@@ -230,11 +243,11 @@
 
         
     <div class="post-nav">
-      <div class="post-nav-item"></div>
       <div class="post-nav-item">
-    <a href="/2020/03/20/forsun-introduction-laravel/" rel="next" title="高性能千万级定时任务管理服务forsun laravel插件使用详解">
-      高性能千万级定时任务管理服务forsun laravel插件使用详解 <i class="fa fa-chevron-right"></i>
+    <a href="/2018/03/10/forsun-introduction-laravel/" rel="prev" title="高性能千万级定时任务管理服务forsun laravel插件使用详解">
+      <i class="fa fa-chevron-left"></i> 高性能千万级定时任务管理服务forsun laravel插件使用详解
     </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -285,10 +298,10 @@
 
       <ul class="sidebar-nav motion-element">
         <li class="sidebar-nav-toc">
-          Table of Contents
+          文章目录
         </li>
         <li class="sidebar-nav-overview">
-          Overview
+          站点概览
         </li>
       </ul>
 
@@ -309,15 +322,28 @@
           <a href="/archives/">
         
           <span class="site-state-item-count">3</span>
-          <span class="site-state-item-name">posts</span>
+          <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
         <span class="site-state-item-count">1</span>
-        <span class="site-state-item-name">tags</span>
+        <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
 </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/snower" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;snower" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/u/2002171773" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;u&#x2F;2002171773" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/snower199" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;snower199" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+  </div>
 
 
 
@@ -346,10 +372,10 @@
   </span>
   <span class="author" itemprop="copyrightHolder">snower</span>
 </div>
-  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v4.2.0
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
   </div>
   <span class="post-meta-divider">|</span>
-  <div class="theme-info">Theme – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.2
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
   </div>
 
         
@@ -375,7 +401,7 @@
 <script src="/js/motion.js"></script>
 
 
-<script src="/js/schemes/muse.js"></script>
+<script src="/js/schemes/pisces.js"></script>
 
 
 <script src="/js/next-boot.js"></script>
