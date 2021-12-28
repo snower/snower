@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.snower.com","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="为啥需要？在实际开发中我们经常会遇到需要长时间等待后台事件的情况，例如较为常见的扫码登录功能，二维码界面需等待后台扫码登录成功的事件，再如导入导出等需要较长时间才能处理完成的任务，此时需要把任务放到后台由异步任务进行处理，完成后再给前台界面推送完成事件，以上需求我们需要用长连接才能完成推送，但长连接推送状态管理复杂，且需要部署独立系统，系统流程复杂且横向水平扩展困难，此时选择更简单long pol">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在openresty上基于是lock和redis快速搭建高性能long polling推送服务">
+<meta property="og:url" content="http://blog.snower.com/2021/12/28/slock-openresty-poll/index.html">
+<meta property="og:site_name" content="Snower">
+<meta property="og:description" content="为啥需要？在实际开发中我们经常会遇到需要长时间等待后台事件的情况，例如较为常见的扫码登录功能，二维码界面需等待后台扫码登录成功的事件，再如导入导出等需要较长时间才能处理完成的任务，此时需要把任务放到后台由异步任务进行处理，完成后再给前台界面推送完成事件，以上需求我们需要用长连接才能完成推送，但长连接推送状态管理复杂，且需要部署独立系统，系统流程复杂且横向水平扩展困难，此时选择更简单long pol">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-12-28T02:58:48.000Z">
+<meta property="article:modified_time" content="2021-12-28T09:25:37.937Z">
+<meta property="article:author" content="snower">
+<meta property="article:tag" content="slock">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://blog.snower.com/2021/12/28/slock-openresty-poll/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>在openresty上基于是lock和redis快速搭建高性能long polling推送服务 | Snower</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Snower</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://blog.snower.com/2021/12/28/slock-openresty-poll/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="snower">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Snower">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          在openresty上基于是lock和redis快速搭建高性能long polling推送服务
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-12-28 10:58:48 / 修改时间：17:25:37" itemprop="dateCreated datePublished" datetime="2021-12-28T10:58:48+08:00">2021-12-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="为啥需要？"><a href="#为啥需要？" class="headerlink" title="为啥需要？"></a>为啥需要？</h1><p>在实际开发中我们经常会遇到需要长时间等待后台事件的情况，例如较为常见的扫码登录功能，二维码界面需等待后台扫码登录成功的事件，再如导入导出等需要较长时间才能处理完成的任务，此时需要把任务放到后台由异步任务进行处理，完成后再给前台界面推送完成事件，以上需求我们需要用长连接才能完成推送，但长连接推送状态管理复杂，且需要部署独立系统，系统流程复杂且横向水平扩展困难，此时选择更简单long polling等待是一个更好的选择，http请求直接等待返回，显然逻辑更简单，可用性可维护性也会更高。</p>
+<p>openresty是一个构建在nginx上的高性能能系统，一般情况下我们也需要在自身服务前部署nginx作为网关，那么选择openresty来构建一个高性能的long polling服务显然是一个好选择。slock是高性能的状态及原子操作数据库，redis则是高性能的内存缓存数据库，使用下边nginx配置文件即可快速基于slock和redis构建一个高性能高可用long polling服务。同时构建的此long polling服务是一个通用服务，即可用于扫码登录这样的需求完成状态推送，也可用于像消息系统、私信系统等的消息推送。</p>
+<p>slock项目地址：<a href="https://github.com/snower/slock" target="_blank" rel="noopener">https://github.com/snower/slock</a></p>
+<p>slock简介可看：<a href="https://segmentfault.com/a/1190000041148625" target="_blank" rel="noopener">https://segmentfault.com/a/1190000041148625</a></p>
+<a id="more"></a>
+
+<h1 id="快速配置构建"><a href="#快速配置构建" class="headerlink" title="快速配置构建"></a>快速配置构建</h1><p>首先需在安装好的openresty服务中安装slock的lua client包。</p>
+<p>项目地址：<a href="https://github.com/snower/slock-lua-nginx" target="_blank" rel="noopener">https://github.com/snower/slock-lua-nginx</a></p>
+<p>安装方式即把slock-lua-nginx中slock.lua复制到openresty目录中的lualib/中，然后添加以下nginx配置文件修改相关参数即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br></pre></td><td class="code"><pre><span class="line">init_worker_by_lua_block &#123;</span><br><span class="line">    local slock &#x3D; require &quot;slock&quot;</span><br><span class="line">    slock:connect(&quot;server1&quot;, &quot;127.0.0.1&quot;, 5658)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">    listen 8081;</span><br><span class="line">    default_type application&#x2F;json;</span><br><span class="line"></span><br><span class="line">    location &#x2F;poll&#x2F;event &#123;</span><br><span class="line">        content_by_lua_block &#123;</span><br><span class="line">            local cjson &#x3D; require &quot;cjson&quot;</span><br><span class="line">            local slock &#x3D; require &quot;slock&quot;</span><br><span class="line">            local slock_client &#x3D; slock:get(&quot;server1&quot;)</span><br><span class="line">            local default_type &#x3D; ngx.var.arg_default_type or &quot;clear&quot;</span><br><span class="line">            local wait_type &#x3D; ngx.var.arg_wait_type or &quot;&quot;</span><br><span class="line">            local event_key &#x3D; ngx.var.arg_event or &quot;&quot;</span><br><span class="line">            local wait_timeout &#x3D; tonumber(ngx.var.arg_timeout) or 60</span><br><span class="line"></span><br><span class="line">            local sendResult &#x3D; function(err_code, err_message)</span><br><span class="line">                ngx.say(cjson.encode(&#123;</span><br><span class="line">                    err_code &#x3D; err_code,</span><br><span class="line">                    err_message &#x3D; err_message,</span><br><span class="line">                &#125;))</span><br><span class="line">            end</span><br><span class="line"></span><br><span class="line">            if event_key &#x3D;&#x3D; &quot;&quot; then</span><br><span class="line">                return sendResult(400, &quot;event key is empty&quot;)</span><br><span class="line">            end</span><br><span class="line"></span><br><span class="line">            local event &#x3D; nil</span><br><span class="line">            if default_type &#x3D;&#x3D; &quot;set&quot; then</span><br><span class="line">                event &#x3D; slock_client:newDefaultSetEvent(event_key, 5, wait_timeout * 2)</span><br><span class="line">            else</span><br><span class="line">                event &#x3D; slock_client:newDefaultClearEvent(event_key, 5, wait_timeout * 2)</span><br><span class="line">            end</span><br><span class="line"></span><br><span class="line">            if wait_type &#x3D;&#x3D; &quot;reset&quot; then</span><br><span class="line">                local ok, err &#x3D; event:waitAndTimeoutRetryClear(wait_timeout)</span><br><span class="line">                if not ok then</span><br><span class="line">                    return sendResult(504, &quot;wait event timeout&quot;)</span><br><span class="line">                end</span><br><span class="line">                return sendResult(0, &quot;succed&quot;)</span><br><span class="line">            end</span><br><span class="line"></span><br><span class="line">            local ok, err &#x3D; event:wait(wait_timeout)</span><br><span class="line">            if not ok then</span><br><span class="line">                return sendResult(504, &quot;wait event timeout&quot;)</span><br><span class="line">            end</span><br><span class="line">            return sendResult(0, &quot;succed&quot;)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    location &#x2F;poll&#x2F;message &#123;</span><br><span class="line">        content_by_lua_block &#123;</span><br><span class="line">            local cjson &#x3D; require &quot;cjson&quot;</span><br><span class="line">            local redis &#x3D; require &quot;resty.redis&quot;</span><br><span class="line">            local slock &#x3D; require &quot;slock&quot;</span><br><span class="line">            local redis_client &#x3D; redis:new()</span><br><span class="line">            local slock_client &#x3D; slock:get(&quot;server1&quot;)</span><br><span class="line"></span><br><span class="line">            local default_type &#x3D; ngx.var.arg_default_type or &quot;clear&quot;</span><br><span class="line">            local wait_type &#x3D; ngx.var.arg_wait_type or &quot;&quot;</span><br><span class="line">            local event_key &#x3D; ngx.var.arg_event or &quot;&quot;</span><br><span class="line">            local wait_timeout &#x3D; tonumber(ngx.var.arg_timeout) or 60</span><br><span class="line"></span><br><span class="line">            local sendResult &#x3D; function(err_code, err_message, data)</span><br><span class="line">                ngx.say(cjson.encode(&#123;</span><br><span class="line">                    err_code &#x3D; err_code,</span><br><span class="line">                    err_message &#x3D; err_message,</span><br><span class="line">                    data &#x3D; data,</span><br><span class="line">                &#125;))</span><br><span class="line">            end</span><br><span class="line"></span><br><span class="line">            if event_key &#x3D;&#x3D; &quot;&quot; then</span><br><span class="line">                return sendResult(400, &quot;event key is empty&quot;)</span><br><span class="line">            end</span><br><span class="line"></span><br><span class="line">            redis_client:set_timeouts(5000, wait_timeout * 500, wait_timeout * 500)</span><br><span class="line">            local ok, err &#x3D; redis_client:connect(&quot;10.10.10.251&quot;, 6379)</span><br><span class="line">            if not ok then</span><br><span class="line">                return sendResult(502, &quot;redis connect fail&quot;)</span><br><span class="line">            end</span><br><span class="line">            local message, err &#x3D; redis_client:lpop(event_key)</span><br><span class="line">            if err ~&#x3D; nil then</span><br><span class="line">                return sendResult(500, &quot;redis lpop fail&quot;)</span><br><span class="line">            end</span><br><span class="line">            if message ~&#x3D; ngx.null then</span><br><span class="line">                redis_client:set_keepalive(7200000, 16)</span><br><span class="line">                return sendResult(0, &quot;&quot;, message)</span><br><span class="line">            end</span><br><span class="line"></span><br><span class="line">            local event &#x3D; nil</span><br><span class="line">            if default_type &#x3D;&#x3D; &quot;set&quot; then</span><br><span class="line">                event &#x3D; slock_client:newDefaultSetEvent(event_key, 5, wait_timeout * 2)</span><br><span class="line">            else</span><br><span class="line">                event &#x3D; slock_client:newDefaultClearEvent(event_key, 5, wait_timeout * 2)</span><br><span class="line">            end</span><br><span class="line"></span><br><span class="line">            if wait_type &#x3D;&#x3D; &quot;reset&quot; then</span><br><span class="line">                local ok, err &#x3D; event:waitAndTimeoutRetryClear(wait_timeout)</span><br><span class="line">                if not ok then</span><br><span class="line">                    return sendResult(504, &quot;wait timeout&quot;)</span><br><span class="line">                end</span><br><span class="line"></span><br><span class="line">                local message, err &#x3D; redis_client:lpop(event_key)</span><br><span class="line">                if err ~&#x3D; nil then</span><br><span class="line">                    return sendResult(500, &quot;redis lpop fail&quot;)</span><br><span class="line">                end</span><br><span class="line">                redis_client:set_keepalive(7200000, 16)</span><br><span class="line">                return sendResult(0, &quot;succed&quot;, message)</span><br><span class="line">            end</span><br><span class="line"></span><br><span class="line">            local ok, err &#x3D; event:wait(wait_timeout)</span><br><span class="line">            if not ok then</span><br><span class="line">                return sendResult(504, &quot;wait timeout&quot;)</span><br><span class="line">            end</span><br><span class="line"></span><br><span class="line">            local message, err &#x3D; redis_client:lpop(event_key)</span><br><span class="line">            if err ~&#x3D; nil then</span><br><span class="line">                return sendResult(500, &quot;redis lpop fail&quot;)</span><br><span class="line">            end</span><br><span class="line">            redis_client:set_keepalive(7200000, 16)</span><br><span class="line">            return sendResult(0, &quot;succed&quot;, message)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>/poll/event 接口只等待事件触发，不返回数据。</p>
+<p>/poll/message 则是先从redis中获取数据，成功则返回，否则等待事件触发，再从redis获取数据返回。</p>
+<p>接口Query String参数：</p>
+<ul>
+<li>default_type 创建Event的初始状态是seted还是cleared，wait等待seted状态触发，即如果使用初始是seted则需其它系统先执行clear操作，可选值：set、clear，默认值clear</li>
+<li>wait_type 事件触发后是否重置Event状态，不重置可保证在过期时间内可重入，重置则可用于私信系统的循环获取消息或事件，设置为reset为重置，默认值空字符不重置</li>
+<li>event 等待的事件key，不可为空，redis也使用该key在List数据结构中保存消息</li>
+<li>timeout 数字，等待超时时间，单位秒，默认等待60秒</li>
+</ul>
+<h3 id="特别注意："><a href="#特别注意：" class="headerlink" title="特别注意："></a>特别注意：</h3><ul>
+<li><p>openresty使用单一连接到slock的tcp连接处理所有请求，nginx只有init_worker_by_lua_block创建的socket才可在整个worker生命周期中保持存在，所以slock connect需在init_worker_by_lua_block完成，第一个参数为连接名称，后续可用该名称获取该连接使用。</p>
+</li>
+<li><p>slock配置为replset模式时，可用replset方式连接，使用该模式连接时，nginx会自动跟踪可用节点，保持高可用, 如：slock:connectReplset("server1", {{"127.0.0.1", 5658}, {"127.0.0.1", 5659}})</p>
+</li>
+</ul>
+<p>配置完成后执行下方shell会处于等待返回状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl <span class="string">"http://localhost:8081/poll/message?event=test&amp;default_type=clear"</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="其它系统如何推送事件？"><a href="#其它系统如何推送事件？" class="headerlink" title="其它系统如何推送事件？"></a>其它系统如何推送事件？</h1><h2 id="使用slock-java-client推送事件"><a href="#使用slock-java-client推送事件" class="headerlink" title="使用slock java client推送事件"></a>使用slock java client推送事件</h2><p>java client项目地址：<a href="https://github.com/snower/jaslock" target="_blank" rel="noopener">https://github.com/snower/jaslock</a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> io.github.snower.jaslock.Client;</span><br><span class="line"><span class="keyword">import</span> io.github.snower.jaslock.Event;</span><br><span class="line"><span class="keyword">import</span> io.github.snower.jaslock.exceptions.SlockException;</span><br><span class="line"><span class="keyword">import</span> redis.clients.jedis.Jedis;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.nio.charset.StandardCharsets;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">App</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Client slock = <span class="keyword">new</span> Client(<span class="string">"localhost"</span>, <span class="number">5658</span>);</span><br><span class="line">        Jedis jedis = <span class="keyword">new</span> Jedis(<span class="string">"10.10.10.251"</span>, <span class="number">6379</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">byte</span>[] eventKey = <span class="string">"test"</span>.getBytes(StandardCharsets.UTF_8);</span><br><span class="line">            slock.open();</span><br><span class="line">            jedis.rpush(eventKey, <span class="string">"hello"</span>.getBytes(StandardCharsets.UTF_8));</span><br><span class="line">            jedis.expire(eventKey, <span class="number">120</span>);</span><br><span class="line">            Event event = slock.newEvent(eventKey, <span class="number">5</span>, <span class="number">120</span>, <span class="keyword">false</span>);</span><br><span class="line">            event.set();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException | SlockException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            slock.close();</span><br><span class="line">            jedis.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>newEvent参数：</p>
+<ul>
+<li>eventKey 事件名称，和前端请求一致</li>
+<li>timeout set操作超时事件</li>
+<li>expried 如果初始状态时cleared，则表示set之后状态保持时间，如果初始状态是seted，则表示clear之后状态保持时间，超过改时间都将被自动回收</li>
+<li>defaultSeted ture表示初始是seted状态，false为cleared状态，需和前端传参一致</li>
+</ul>
+<p>注：只推送事件时去除redis操作即可。</p>
+<p>php、python、golang操作类似。</p>
+<p>php client项目地址：<a href="https://github.com/snower/pyslock" target="_blank" rel="noopener">https://github.com/snower/pyslock</a></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Console</span>\<span class="title">Commands</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Console</span>\<span class="title">Command</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Support</span>\<span class="title">Facades</span>\<span class="title">Redis</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Snower</span>\<span class="title">Phslock</span>\<span class="title">Laravel</span>\<span class="title">Facades</span>\<span class="title">Phslock</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestSlockEvent</span> <span class="keyword">extends</span> <span class="title">Command</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The name and signature of the console command.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@var</span> string</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">protected</span> $signature = <span class="string">'test:slock-event'</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The console command description.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@var</span> string</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">protected</span> $description = <span class="string">'Command description'</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Create a new command instance.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> void</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">parent</span>::__construct();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Execute the console command.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> int</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">handle</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        Redis::rpush(<span class="string">"test"</span>, <span class="string">"hello"</span>); <span class="comment">//需禁用prefix</span></span><br><span class="line">        Redis::expire(<span class="string">"test"</span>, <span class="number">120</span>);</span><br><span class="line">        $event = Phslock::Event(<span class="string">"test"</span>, <span class="number">5</span>, <span class="number">120</span>, <span class="keyword">false</span>);</span><br><span class="line">        $event-&gt;set();</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>python client项目地址：<a href="https://github.com/snower/phslock" target="_blank" rel="noopener">https://github.com/snower/phslock</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> redis</span><br><span class="line"><span class="keyword">import</span> pyslock</span><br><span class="line"></span><br><span class="line">redis_client = redis.Redis(<span class="string">"10.10.10.251"</span>)</span><br><span class="line">slock_client = pyslock.Client(<span class="string">"localhost"</span>)</span><br><span class="line"></span><br><span class="line">redis_client.rpush(<span class="string">"test"</span>, <span class="string">"hello"</span>)</span><br><span class="line">redis_client.expire(<span class="string">"test"</span>, <span class="number">120</span>)</span><br><span class="line">event = slock_client.Event(<span class="string">"test"</span>, <span class="number">5</span>, <span class="number">120</span>, <span class="literal">False</span>)</span><br><span class="line">event.set()</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用redis自定义命令推送事件"><a href="#使用redis自定义命令推送事件" class="headerlink" title="使用redis自定义命令推送事件"></a>使用redis自定义命令推送事件</h2><p>也可用redis自定义命令来执行slock Event的set和clear操作完成事件触发。</p>
+<h3 id="初始是seted时："><a href="#初始是seted时：" class="headerlink" title="初始是seted时："></a>初始是seted时：</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#clear操作</span></span><br><span class="line">lock <span class="variable">$&#123;EVENT_KEY&#125;</span> lock_id <span class="variable">$&#123;EVENT_KEY&#125;</span> flag 2 timeout <span class="variable">$&#123;TIMEOUT&#125;</span> expried <span class="variable">$&#123;EXPRIED&#125;</span></span><br><span class="line"><span class="comment">#如 lock test lock_id test flag 2 timeout 5 expried 120</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#set操作</span></span><br><span class="line">unlock <span class="variable">$&#123;EVENT_KEY&#125;</span> lock_id <span class="variable">$&#123;EVENT_KEY&#125;</span></span><br><span class="line"><span class="comment">#如 unlock test lock_id test</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="初始是cleared时："><a href="#初始是cleared时：" class="headerlink" title="初始是cleared时："></a>初始是cleared时：</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#clear操作</span></span><br><span class="line">unlock <span class="variable">$&#123;EVENT_KEY&#125;</span> lock_id <span class="variable">$&#123;EVENT_KEY&#125;</span></span><br><span class="line"><span class="comment">#如 unlock test lock_id test</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#set操作</span></span><br><span class="line">lock <span class="variable">$&#123;EVENT_KEY&#125;</span> lock_id <span class="variable">$&#123;EVENT_KEY&#125;</span> flag 2 timeout <span class="variable">$&#123;TIMEOUT&#125;</span> expried <span class="variable">$&#123;EXPRIED&#125;</span> count 2</span><br><span class="line"><span class="comment">#如 lock test lock_id test flag 2 timeout 5 expried 120 count 2</span></span><br><span class="line"><span class="comment">#用redis-cli -p 5658连接slock后执行该示例命令，即可看到上方等待curl命令成功返回。</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="关于高可用与扩展"><a href="#关于高可用与扩展" class="headerlink" title="关于高可用与扩展"></a>关于高可用与扩展</h1><p>关于高可用，slock支持配置为集群模式，在集权模式运行时主节点异常时可自动选择新主节点，此时如果openresty使用resplset模式连接时，可自动使用新可用节点，保证高可用。</p>
+<p>关于水平扩展，slock良好的多核支持，百万级qps，保证了无需过多考虑水平扩展问题，而openresty则依然保持了web服务常规无状态特性，可按照web常规水平扩展方式扩容即可不断提高系统承载性能。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/slock/" rel="tag"># slock</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/12/23/slock-introduction/" rel="prev" title="分布式高性能状态与原子操作数据库slock简介">
+      <i class="fa fa-chevron-left"></i> 分布式高性能状态与原子操作数据库slock简介
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#为啥需要？"><span class="nav-number">1.</span> <span class="nav-text">为啥需要？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#快速配置构建"><span class="nav-number">2.</span> <span class="nav-text">快速配置构建</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#特别注意："><span class="nav-number">2.0.1.</span> <span class="nav-text">特别注意：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其它系统如何推送事件？"><span class="nav-number">3.</span> <span class="nav-text">其它系统如何推送事件？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用slock-java-client推送事件"><span class="nav-number">3.1.</span> <span class="nav-text">使用slock java client推送事件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用redis自定义命令推送事件"><span class="nav-number">3.2.</span> <span class="nav-text">使用redis自定义命令推送事件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#初始是seted时："><span class="nav-number">3.2.1.</span> <span class="nav-text">初始是seted时：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#初始是cleared时："><span class="nav-number">3.2.2.</span> <span class="nav-text">初始是cleared时：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关于高可用与扩展"><span class="nav-number">4.</span> <span class="nav-text">关于高可用与扩展</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">snower</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/snower" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;snower" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/u/2002171773" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;u&#x2F;2002171773" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/snower199" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;snower199" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">snower</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
