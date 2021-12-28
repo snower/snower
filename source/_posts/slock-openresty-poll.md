@@ -38,7 +38,7 @@ server {
         content_by_lua_block {
             local cjson = require "cjson"
             local slock = require "slock"
-            local slock_client = slock:get("server1")
+            
             local default_type = ngx.var.arg_default_type or "clear"
             local wait_type = ngx.var.arg_wait_type or ""
             local event_key = ngx.var.arg_event or ""
@@ -55,6 +55,7 @@ server {
                 return sendResult(400, "event key is empty")
             end
 
+            local slock_client = slock:get("server1")
             local event = nil
             if default_type == "set" then
                 event = slock_client:newDefaultSetEvent(event_key, 5, wait_timeout * 2)
@@ -83,9 +84,7 @@ server {
             local cjson = require "cjson"
             local redis = require "resty.redis"
             local slock = require "slock"
-            local redis_client = redis:new()
-            local slock_client = slock:get("server1")
-
+            
             local default_type = ngx.var.arg_default_type or "clear"
             local wait_type = ngx.var.arg_wait_type or ""
             local event_key = ngx.var.arg_event or ""
@@ -103,6 +102,7 @@ server {
                 return sendResult(400, "event key is empty")
             end
 
+            local redis_client = redis:new()
             redis_client:set_timeouts(5000, wait_timeout * 500, wait_timeout * 500)
             local ok, err = redis_client:connect("10.10.10.251", 6379)
             if not ok then
@@ -112,11 +112,12 @@ server {
             if err ~= nil then
                 return sendResult(500, "redis lpop fail")
             end
+            redis_client:set_keepalive(7200000, 16)
             if message ~= ngx.null then
-                redis_client:set_keepalive(7200000, 16)
                 return sendResult(0, "", message)
             end
 
+            local slock_client = slock:get("server1")
             local event = nil
             if default_type == "set" then
                 event = slock_client:newDefaultSetEvent(event_key, 5, wait_timeout * 2)
@@ -130,6 +131,12 @@ server {
                     return sendResult(504, "wait timeout")
                 end
 
+                redis_client = redis:new()
+                redis_client:set_timeouts(5000, wait_timeout * 500, wait_timeout * 500)
+                local ok, err = redis_client:connect("10.10.10.251", 6379)
+                if not ok then
+                    return sendResult(502, "redis connect fail")
+                end
                 local message, err = redis_client:lpop(event_key)
                 if err ~= nil then
                     return sendResult(500, "redis lpop fail")
@@ -143,6 +150,12 @@ server {
                 return sendResult(504, "wait timeout")
             end
 
+            redis_client = redis:new()
+            redis_client:set_timeouts(5000, wait_timeout * 500, wait_timeout * 500)
+            local ok, err = redis_client:connect("10.10.10.251", 6379)
+            if not ok then
+                return sendResult(502, "redis connect fail")
+            end
             local message, err = redis_client:lpop(event_key)
             if err ~= nil then
                 return sendResult(500, "redis lpop fail")
