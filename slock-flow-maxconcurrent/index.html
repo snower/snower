@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.snower.com","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="实现原理使用最大锁定次数来控制最大并发数，请求前先进行Lock操作，请求完成后进行Unlock操作，超过最大锁定次数会进入等待，等待超时则出错返回，此时可以达到控制最大并发请求的目的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用slock进行最大并发限流">
+<meta property="og:url" content="http://blog.snower.com/slock-flow-maxconcurrent/index.html">
+<meta property="og:site_name" content="Snower">
+<meta property="og:description" content="实现原理使用最大锁定次数来控制最大并发数，请求前先进行Lock操作，请求完成后进行Unlock操作，超过最大锁定次数会进入等待，等待超时则出错返回，此时可以达到控制最大并发请求的目的。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-01-02T07:58:48.000Z">
+<meta property="article:modified_time" content="2022-01-02T08:47:20.322Z">
+<meta property="article:author" content="snower">
+<meta property="article:tag" content="slock">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://blog.snower.com/slock-flow-maxconcurrent/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>使用slock进行最大并发限流 | Snower</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Snower</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://blog.snower.com/slock-flow-maxconcurrent/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="snower">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Snower">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用slock进行最大并发限流
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-01-02 15:58:48 / 修改时间：16:47:20" itemprop="dateCreated datePublished" datetime="2022-01-02T15:58:48+08:00">2022-01-02</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h1><p>使用最大锁定次数来控制最大并发数，请求前先进行Lock操作，请求完成后进行Unlock操作，超过最大锁定次数会进入等待，等待超时则出错返回，此时可以达到控制最大并发请求的目的。</p>
+<a id="more"></a>
+
+<h1 id="openresty配置代码"><a href="#openresty配置代码" class="headerlink" title="openresty配置代码"></a>openresty配置代码</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">init_worker_by_lua_block &#123;</span><br><span class="line">        local slock &#x3D; require(&quot;slock&quot;)</span><br><span class="line">        slock:connect(&quot;lock1&quot;, &quot;127.0.0.1&quot;, 5658)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">	listen 80;</span><br><span class="line"></span><br><span class="line">	location &#x2F;flow&#x2F;maxconcurrent &#123;</span><br><span class="line">        access_by_lua_block &#123;</span><br><span class="line">            local slock &#x3D; require(&quot;slock&quot;)</span><br><span class="line">            local client &#x3D; slock:get(&quot;lock1&quot;)</span><br><span class="line">            local flow_key &#x3D; ngx.var.flow_key or &quot;flow:maxconcurrent&quot;</span><br><span class="line">            local lock &#x3D; client:newMaxConcurrentFlow(flow_key, 10, 5, 60)</span><br><span class="line">            local ok, err &#x3D; lock:acquire()</span><br><span class="line">            if not ok then</span><br><span class="line">                ngx.say(&quot;acquire error:&quot; .. err)</span><br><span class="line">                ngx.exit(ngx.HTTP_OK)</span><br><span class="line">            else</span><br><span class="line">                ngx.ctx.lock1 &#x3D; lock</span><br><span class="line">            end</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        echo &quot;hello world&quot;;</span><br><span class="line"></span><br><span class="line">        log_by_lua_block &#123;</span><br><span class="line">            local lock &#x3D; ngx.ctx.lock1</span><br><span class="line">            if lock ~&#x3D; nil then</span><br><span class="line">                local ok, err &#x3D; lock:release()</span><br><span class="line">                if not ok then</span><br><span class="line">                    ngx.log(ngx.ERR, &quot;slock release error:&quot; .. err)</span><br><span class="line">                end</span><br><span class="line">            end</span><br><span class="line">        &#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="java中使用"><a href="#java中使用" class="headerlink" title="java中使用"></a>java中使用</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> io.github.snower.jaslock.Client;</span><br><span class="line"><span class="keyword">import</span> io.github.snower.jaslock.MaxConcurrentFlow;</span><br><span class="line"><span class="keyword">import</span> io.github.snower.jaslock.exceptions.SlockException;</span><br><span class="line"><span class="keyword">import</span> java.nio.charset.StandardCharsets;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">App</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">useCustomerCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Client slock = <span class="keyword">new</span> Client(<span class="string">"localhost"</span>, <span class="number">5658</span>);</span><br><span class="line">        <span class="keyword">byte</span>[] flowKey = <span class="string">"test"</span>.getBytes(StandardCharsets.UTF_8);</span><br><span class="line">        MaxConcurrentFlow flow = slock.newMaxConcurrentFlow(flowKey, (<span class="keyword">short</span>) <span class="number">10</span>, <span class="number">5</span>, <span class="number">120</span>); <span class="comment">//最多10并发</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            flow.acquire();</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                useCustomerCode();</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    flow.release();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (SlockException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SlockException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            slock.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="参数详解"><a href="#参数详解" class="headerlink" title="参数详解"></a>参数详解</h1><h3 id="flow-key-限流key"><a href="#flow-key-限流key" class="headerlink" title="flow_key 限流key"></a>flow_key 限流key</h3><p>字节类型，长度超过16字节时会用MD5做digest变为16字节，不足16字节时再前补0x00到16字节。</p>
+<h3 id="count-最大并发数"><a href="#count-最大并发数" class="headerlink" title="count 最大并发数"></a>count 最大并发数</h3><p>最大数值不可超过2字节整型大小。</p>
+<h3 id="timeout-最大等待时间"><a href="#timeout-最大等待时间" class="headerlink" title="timeout 最大等待时间"></a>timeout 最大等待时间</h3><p>单位秒，最大数值不可超过2字节整型大小，设置较长时间有较好削峰平谷，但注意可能超过客户端请求超时时间，设置较短时间可进行fallback逻辑，设置0表示不等待。</p>
+<h3 id="expreid-acquire后过期时间"><a href="#expreid-acquire后过期时间" class="headerlink" title="expreid acquire后过期时间"></a>expreid acquire后过期时间</h3><p>单位秒，最大数值不可超过2字节整型大小，注意此时间一般会在异常情况下，请求完成后未正常release导致该并发一致被占用时，可在过期时间到后自动修复，但也要注意设置时间小于绝大部分请求时间时，会导致请求释放并发使得限流失效。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/slock/" rel="tag"># slock</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/slock-flow-tokenbucket/" rel="prev" title="使用slock进行令牌桶限流">
+      <i class="fa fa-chevron-left"></i> 使用slock进行令牌桶限流
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#实现原理"><span class="nav-number">1.</span> <span class="nav-text">实现原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#openresty配置代码"><span class="nav-number">2.</span> <span class="nav-text">openresty配置代码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#java中使用"><span class="nav-number">3.</span> <span class="nav-text">java中使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参数详解"><span class="nav-number">4.</span> <span class="nav-text">参数详解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#flow-key-限流key"><span class="nav-number">4.0.1.</span> <span class="nav-text">flow_key 限流key</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#count-最大并发数"><span class="nav-number">4.0.2.</span> <span class="nav-text">count 最大并发数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#timeout-最大等待时间"><span class="nav-number">4.0.3.</span> <span class="nav-text">timeout 最大等待时间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#expreid-acquire后过期时间"><span class="nav-number">4.0.4.</span> <span class="nav-text">expreid acquire后过期时间</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">snower</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/snower" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;snower" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/u/2002171773" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;u&#x2F;2002171773" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/snower199" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;snower199" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">snower</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

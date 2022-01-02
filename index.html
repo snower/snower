@@ -155,7 +155,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://blog.snower.com/2021/12/28/slock-openresty-poll/">
+    <link itemprop="mainEntityOfPage" href="http://blog.snower.com/slock-flow-maxconcurrent/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -169,7 +169,214 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2021/12/28/slock-openresty-poll/" class="post-title-link" itemprop="url">在openresty上基于是lock和redis快速搭建高性能long polling推送服务</a>
+            <a href="/slock-flow-maxconcurrent/" class="post-title-link" itemprop="url">使用slock进行最大并发限流</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-01-02 15:58:48 / 修改时间：16:47:20" itemprop="dateCreated datePublished" datetime="2022-01-02T15:58:48+08:00">2022-01-02</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h1><p>使用最大锁定次数来控制最大并发数，请求前先进行Lock操作，请求完成后进行Unlock操作，超过最大锁定次数会进入等待，等待超时则出错返回，此时可以达到控制最大并发请求的目的。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/slock-flow-maxconcurrent/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://blog.snower.com/slock-flow-tokenbucket/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="snower">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Snower">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/slock-flow-tokenbucket/" class="post-title-link" itemprop="url">使用slock进行令牌桶限流</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-01-02 15:58:48 / 修改时间：16:48:36" itemprop="dateCreated datePublished" datetime="2022-01-02T15:58:48+08:00">2022-01-02</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h1><p>设置最大锁定数为令牌数，初始即为所有令牌都可用，过期时间设置为全部令牌发放的周期，请求前先进行Lock操作，请求完成后不进行Unlock操作，请求前进行的Lock会在过期后重置，此操作可认为令牌重置，此时该令牌可被先请求使用，保证时间周期内只能完成指定请求个数。</p>
+<p>在较长的时间周期中如需完成时间对齐，可先进行一次超时时间设置为0，过期时间设置为距离下次重置时间的剩余时间，如果进行Lock操作返回超时，则表示当前时间周期令牌已用尽，如等待超时时间还大于剩余时间，可再次进行Lock操作，此时超时时间设置为等待超时的时间，过期时间设置为令牌周期，即可完成令牌时间周期对齐。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/slock-flow-tokenbucket/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://blog.snower.com/slock/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="snower">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Snower">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/slock/" class="post-title-link" itemprop="url">slock-分布式高性能状态与原子操作数据库</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-01-02 14:58:48 / 修改时间：16:35:44" itemprop="dateCreated datePublished" datetime="2022-01-02T14:58:48+08:00">2022-01-02</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="slock-分布式高性能状态与原子操作数据库"><a href="#slock-分布式高性能状态与原子操作数据库" class="headerlink" title="slock-分布式高性能状态与原子操作数据库"></a>slock-分布式高性能状态与原子操作数据库</h1><p>高性能分布式状态同步与原子操作数据库。。通过锁队列、高性能异步二进制网络协议提供良好的多核支持。 可用于尖峰、同步、事件通知、并发控制等。支持Redis客户端。 <a href="https://github.com/snower/slock" target="_blank" rel="noopener">Star Github</a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> io.github.snower.jaslock.Client;</span><br><span class="line"><span class="keyword">import</span> io.github.snower.jaslock.Event;</span><br><span class="line"><span class="keyword">import</span> io.github.snower.jaslock.Lock;</span><br><span class="line"><span class="keyword">import</span> io.github.snower.jaslock.ReplsetClient;</span><br><span class="line"><span class="keyword">import</span> io.github.snower.jaslock.exceptions.SlockException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.nio.charset.StandardCharsets;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">App</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        ReplsetClient replsetClient = <span class="keyword">new</span> ReplsetClient(<span class="keyword">new</span> String[]&#123;<span class="string">"172.27.214.150:5658"</span>&#125;);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            replsetClient.open();</span><br><span class="line">            Lock lock = replsetClient.newLock(<span class="string">"test"</span>.getBytes(StandardCharsets.UTF_8), <span class="number">5</span>, <span class="number">5</span>);</span><br><span class="line">            lock.acquire();</span><br><span class="line">            lock.release();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SlockException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            replsetClient.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Client库"><a href="#Client库" class="headerlink" title="Client库"></a>Client库</h2><ul>
+<li>java <a href="https://github.com/snower/jaslock" target="_blank" rel="noopener">https://github.com/snower/jaslock</a></li>
+<li>python <a href="https://github.com/snower/pyslock" target="_blank" rel="noopener">https://github.com/snower/pyslock</a></li>
+<li>php <a href="https://github.com/snower/phslock" target="_blank" rel="noopener">https://github.com/snower/phslock</a></li>
+<li>openresty <a href="https://github.com/snower/slock-lua-nginx" target="_blank" rel="noopener">https://github.com/snower/slock-lua-nginx</a></li>
+<li>golang <a href="https://github.com/snower/slock" target="_blank" rel="noopener">https://github.com/snower/slock</a></li>
+</ul>
+<h2 id="文章"><a href="#文章" class="headerlink" title="文章"></a>文章</h2><ul>
+<li><a href="/slock-introduction/">分布式高性能状态与原子操作数据库slock简介</a></li>
+<li><a href="/slock-openresty-poll/">在openresty上基于是lock和redis快速搭建高性能long polling推送服务</a></li>
+<li><a href="/slock-flow-maxconcurrent/">使用slock进行最大并发限流</a></li>
+<li><a href="/slock-flow-tokenbucket/">使用slock进行令牌桶限流</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://blog.snower.com/slock-openresty-poll/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="snower">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Snower">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/slock-openresty-poll/" class="post-title-link" itemprop="url">在openresty上基于是lock和redis快速搭建高性能long polling推送服务</a>
         </h1>
 
         <div class="post-meta">
@@ -200,7 +407,7 @@
 <p>slock简介可看：<a href="https://segmentfault.com/a/1190000041148625" target="_blank" rel="noopener">https://segmentfault.com/a/1190000041148625</a></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/12/28/slock-openresty-poll/#more" rel="contents">
+              <a class="btn" href="/slock-openresty-poll/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -224,7 +431,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://blog.snower.com/2021/12/23/slock-introduction/">
+    <link itemprop="mainEntityOfPage" href="http://blog.snower.com/slock-introduction/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -238,7 +445,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2021/12/23/slock-introduction/" class="post-title-link" itemprop="url">分布式高性能状态与原子操作数据库slock简介</a>
+            <a href="/slock-introduction/" class="post-title-link" itemprop="url">分布式高性能状态与原子操作数据库slock简介</a>
         </h1>
 
         <div class="post-meta">
@@ -247,10 +454,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-12-23 10:58:48 / 修改时间：11:46:39" itemprop="dateCreated datePublished" datetime="2021-12-23T10:58:48+08:00">2021-12-23</time>
+              <time title="创建时间：2021-12-23 10:58:48" itemprop="dateCreated datePublished" datetime="2021-12-23T10:58:48+08:00">2021-12-23</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-02 16:23:20" itemprop="dateModified" datetime="2022-01-02T16:23:20+08:00">2022-01-02</time>
+              </span>
 
           
 
@@ -269,7 +482,7 @@
 <p>随着nodejs的使用，异步IO相关框架也越来越成熟，使用也越来越方便，多线程同步IO模式下，某些场景很多时候我们需要转化为队列处理然后再推送结果，但异步IO就完全不需要这么复杂，直接加分布式锁等待可用就行，整个过程完全回到了单机多线程编程的逻辑，更简单也更容易理解和维护了，比如下单请求需要操作很多，在高并发下可能需要发送到队列中处理完成再推送结果，但用异步IO的加分布式锁话，仔细看异步IO加锁其实又组成了一个更大的分布式队列，大大简化了实现步骤。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/12/23/slock-introduction/#more" rel="contents">
+              <a class="btn" href="/slock-introduction/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -293,7 +506,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://blog.snower.com/2020/03/20/forsun-extension/">
+    <link itemprop="mainEntityOfPage" href="http://blog.snower.com/forsun-extension/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -307,7 +520,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/03/20/forsun-extension/" class="post-title-link" itemprop="url">高性能千万级定时任务管理服务forsun扩展开发之整合celery</a>
+            <a href="/forsun-extension/" class="post-title-link" itemprop="url">高性能千万级定时任务管理服务forsun扩展开发之整合celery</a>
         </h1>
 
         <div class="post-meta">
@@ -337,7 +550,7 @@
 <p>那么我们就来轻松愉快实现一个整合celery的扩展吧。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/03/20/forsun-extension/#more" rel="contents">
+              <a class="btn" href="/forsun-extension/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -361,7 +574,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://blog.snower.com/2018/03/10/forsun-introduction-laravel/">
+    <link itemprop="mainEntityOfPage" href="http://blog.snower.com/forsun-introduction-laravel/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -375,7 +588,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2018/03/10/forsun-introduction-laravel/" class="post-title-link" itemprop="url">高性能千万级定时任务管理服务forsun laravel插件使用详解</a>
+            <a href="/forsun-introduction-laravel/" class="post-title-link" itemprop="url">高性能千万级定时任务管理服务forsun laravel插件使用详解</a>
         </h1>
 
         <div class="post-meta">
@@ -418,7 +631,7 @@
 </ul>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2018/03/10/forsun-introduction-laravel/#more" rel="contents">
+              <a class="btn" href="/forsun-introduction-laravel/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -442,7 +655,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://blog.snower.com/2018/03/04/forsun-introduction/">
+    <link itemprop="mainEntityOfPage" href="http://blog.snower.com/forsun-introduction/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -456,7 +669,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2018/03/04/forsun-introduction/" class="post-title-link" itemprop="url">高性能千万级定时任务管理服务forsun使用详解</a>
+            <a href="/forsun-introduction/" class="post-title-link" itemprop="url">高性能千万级定时任务管理服务forsun使用详解</a>
         </h1>
 
         <div class="post-meta">
@@ -496,7 +709,7 @@
 </ul>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2018/03/04/forsun-introduction/#more" rel="contents">
+              <a class="btn" href="/forsun-introduction/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -583,7 +796,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -628,7 +841,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

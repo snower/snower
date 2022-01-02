@@ -23,7 +23,7 @@
   <meta name="description" content="为啥需要？在实际开发中我们经常会遇到需要长时间等待后台事件的情况，例如较为常见的扫码登录功能，二维码界面需等待后台扫码登录成功的事件，再如导入导出等需要较长时间才能处理完成的任务，此时需要把任务放到后台由异步任务进行处理，完成后再给前台界面推送完成事件，以上需求我们需要用长连接才能完成推送，但长连接推送状态管理复杂，且需要部署独立系统，系统流程复杂且横向水平扩展困难，此时选择更简单long pol">
 <meta property="og:type" content="article">
 <meta property="og:title" content="在openresty上基于是lock和redis快速搭建高性能long polling推送服务">
-<meta property="og:url" content="http://blog.snower.com/2021/12/28/slock-openresty-poll/index.html">
+<meta property="og:url" content="http://blog.snower.com/slock-openresty-poll/index.html">
 <meta property="og:site_name" content="Snower">
 <meta property="og:description" content="为啥需要？在实际开发中我们经常会遇到需要长时间等待后台事件的情况，例如较为常见的扫码登录功能，二维码界面需等待后台扫码登录成功的事件，再如导入导出等需要较长时间才能处理完成的任务，此时需要把任务放到后台由异步任务进行处理，完成后再给前台界面推送完成事件，以上需求我们需要用长连接才能完成推送，但长连接推送状态管理复杂，且需要部署独立系统，系统流程复杂且横向水平扩展困难，此时选择更简单long pol">
 <meta property="og:locale" content="zh_CN">
@@ -33,7 +33,7 @@
 <meta property="article:tag" content="slock">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://blog.snower.com/2021/12/28/slock-openresty-poll/">
+<link rel="canonical" href="http://blog.snower.com/slock-openresty-poll/">
 
 
 <script id="page-configurations">
@@ -160,7 +160,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://blog.snower.com/2021/12/28/slock-openresty-poll/">
+    <link itemprop="mainEntityOfPage" href="http://blog.snower.com/slock-openresty-poll/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -269,10 +269,13 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/12/23/slock-introduction/" rel="prev" title="分布式高性能状态与原子操作数据库slock简介">
+    <a href="/slock-introduction/" rel="prev" title="分布式高性能状态与原子操作数据库slock简介">
       <i class="fa fa-chevron-left"></i> 分布式高性能状态与原子操作数据库slock简介
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/slock/" rel="next" title="slock-分布式高性能状态与原子操作数据库">
+      slock-分布式高性能状态与原子操作数据库 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -346,7 +349,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -391,7 +394,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
