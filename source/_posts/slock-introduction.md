@@ -76,8 +76,6 @@ openresty使用此服务完成限流可以很方便的完成跨节点，同时�
 每个key可以设置最大锁定次数，使用该逻辑可以非常方便的实现最大并发限流。
 
 ```lua
-lua_package_path "lib/resty/slock.lua;";
-
 init_worker_by_lua_block {
         local slock = require("slock")
         slock:connect("lock1", "127.0.0.1", 5658)
@@ -90,13 +88,7 @@ server {
           access_by_lua_block {
                   local slock = require("slock")
                   local client = slock:get("lock1")
-                  local flow_key = "flow:maxconcurrent"
-                  local args = ngx.req.get_uri_args()
-                  for key, val in pairs(args) do
-                          if key == "flow_key" then
-                                  flow_key = val
-                          end
-                  end
+                  local flow_key = ngx.var.flow_key or "flow:maxconcurrent"
                   local lock = client:newMaxConcurrentFlow(flow_key, 10, 5, 60)
                   local ok, err = lock:acquire()
                   if not ok then
@@ -127,9 +119,7 @@ server {
 
 每个key可以设置最大锁定次数，并设置为在令牌到期时过期，即可实现令牌桶限流，使用毫秒级过期时间的时候也可以从此方式来完成削峰平衡流量。
 
-```lua
-lua_package_path "lib/resty/?.lua;";
-
+```conf
 init_worker_by_lua_block {
         local slock = require("slock")
         slock:connect("lock1", "127.0.0.1", 5658)
@@ -142,13 +132,7 @@ server {
                 access_by_lua_block {
                         local slock = require("slock")
                         local client = slock:get("lock1")
-                        local flow_key = "flow:tokenbucket"
-                        local args = ngx.req.get_uri_args()
-                        for key, val in pairs(args) do
-                                if key == "flow_key" then
-                                        flow_key = val
-                                end
-                        end
+                        local flow_key = ngx.var.flow_key or "flow:tokenbucket"
                         local lock = client:newTokenBucketFlow(flow_key, 10, 5, 60)
                         local ok, err = lock:acquire()
                         if not ok then
